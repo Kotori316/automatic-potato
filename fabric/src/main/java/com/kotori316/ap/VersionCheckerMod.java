@@ -28,7 +28,7 @@ public final class VersionCheckerMod implements ModInitializer {
                 e.getProvider().getMetadata().getId(),
                 e.getProvider().getMetadata().getVersion(),
                 e.getEntrypoint().versionJsonUrl(),
-                minecraftVersion,
+                e.getEntrypoint().targetMinecraftVersion().orElse(minecraftVersion),
                 loaderVersion
             ))
             .map(ModWithVersion::asRunnable)
