@@ -7,6 +7,11 @@
   "authors": [
     "Kotori316"
   ],
+  "contact": {
+    "homepage": "https://github.com/Kotori316/automatic-potato",
+    "issues": "https://github.com/Kotori316/automatic-potato/issues",
+    "sources": "https://github.com/Kotori316/automatic-potato"
+  },
   "icon": "assets/version_checker.png",
   "license": "All rights reserved",
   "environment": "*",

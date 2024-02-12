@@ -69,7 +69,7 @@ afterEvaluate {
             platformVersion = "0.15.+"
             modName = modId
             changelog = "Version ${project.version}"
-            homepage = "https://github.com/Kotori316/automatic-potato"
+            homepage = "https://modrinth.com/project/automatic-potato"
             isDryRun = releaseDebug
         }
         register("checkReleaseVersion", CallVersionCheckFunctionTask::class) {
