@@ -1,0 +1,20 @@
+{
+  "schemaVersion": 1,
+  "id": "kotori316_version_checker",
+  "version": "${version}",
+  "name": "kotori316_version_checker",
+  "description": "Check version from JSON compatible with Forge version checker JSON",
+  "authors": [
+    "Kotori316"
+  ],
+  "license": "All rights reserved",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.kotori316.ap.VersionCheckerMod"
+    ],
+    "kotori316_version_checker": [
+      "com.kotori316.ap.VersionCheckerEntrypointImpl"
+    ]
+  }
+}
