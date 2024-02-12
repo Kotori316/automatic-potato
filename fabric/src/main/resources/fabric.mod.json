@@ -7,6 +7,7 @@
   "authors": [
     "Kotori316"
   ],
+  "icon": "assets/version_checker.png",
   "license": "All rights reserved",
   "environment": "*",
   "entrypoints": {

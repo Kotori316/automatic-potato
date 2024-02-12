@@ -5,7 +5,7 @@ plugins {
 base {
     archivesName = "VersionCheckerMod"
     group = "com.kotori316"
-    version = "1.0.0"
+    version = project.property("version")!!
 }
 
 java {
@@ -15,9 +15,9 @@ java {
     }
 }
 
-val modId: String = "kotori316_version_checker"
+val modId: String by project
 // Fixed. Use 1.16.5
-val minecraftVersion: String = "1.16.5"
+val minecraftVersion: String by project
 
 tasks.processResources {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
