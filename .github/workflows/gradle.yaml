@@ -1,0 +1,30 @@
+name: 'Build Check'
+on:
+  push:
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+      - run: chmod +x ./gradlew
+      - uses: gradle/gradle-build-action@v3
+        with:
+          cache-read-only: ${{ github.event_name != 'push' }}
+          gradle-home-cache-cleanup: true
+          add-job-summary: 'on-failure'
+      - run: ./gradlew javaToolchains checkReleaseVersion
+      - run: ./gradlew build
+      - name: Upload artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: automatic-potato-${{ github.run_number }}
+          path: "*/build/libs/*.jar"
+          if-no-files-found: error
+          retention-days: 7
