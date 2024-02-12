@@ -16,5 +16,8 @@
     "kotori316_version_checker": [
       "com.kotori316.ap.VersionCheckerEntrypointImpl"
     ]
+  },
+  "custom": {
+    "kotori316_version_checker": "https://version.kotori316.com/get-version/1.16.5/fabric/kotori316_version_checker"
   }
 }
