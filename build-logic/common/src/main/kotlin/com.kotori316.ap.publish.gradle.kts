@@ -4,6 +4,7 @@ import com.kotori316.plugin.cf.CallVersionFunctionTask
 plugins {
     id("maven-publish")
     id("signing")
+    id("fabric-loom")
     id("me.modmuss50.mod-publish-plugin")
     id("com.kotori316.plugin.cf")
 }
@@ -24,88 +25,90 @@ val hasGpgSignature = project.hasProperty("signing.keyId") &&
         project.hasProperty("signing.password") &&
         project.hasProperty("signing.secretKeyRingFile")
 
-afterEvaluate {
-    val remapJar: org.gradle.jvm.tasks.Jar by tasks.named("remapJar", org.gradle.jvm.tasks.Jar::class)
-    signing {
-        sign(publishing.publications)
-        sign(remapJar)
-    }
-    tasks {
-        val jksSignJar = register("jksSignJar") {
-            dependsOn(remapJar)
-            onlyIf {
-                project.hasProperty("jarSign.keyAlias") &&
-                        project.hasProperty("jarSign.keyLocation") &&
-                        project.hasProperty("jarSign.storePass")
-            }
-            doLast {
-                ant.withGroovyBuilder {
-                    "signjar"(
-                        "jar" to remapJar.archiveFile,
-                        "alias" to project.findProperty("jarSign.keyAlias"),
-                        "keystore" to project.findProperty("jarSign.keyLocation"),
-                        "storepass" to project.findProperty("jarSign.storePass"),
-                        "sigalg" to "Ed25519",
-                        "digestalg" to "SHA-256",
-                        "tsaurl" to "http://timestamp.digicert.com",
-                    )
-                }
-            }
-        }
-        remapJar.finalizedBy(jksSignJar)
-        withType(Sign::class) {
-            onlyIf { hasGpgSignature }
-        }
-        withType(AbstractPublishToMaven::class) {
-            if (hasGpgSignature) {
-                dependsOn("signRemapJar")
-            }
-        }
+val remapJarTask: org.gradle.jvm.tasks.Jar by tasks.named("remapJar", org.gradle.jvm.tasks.Jar::class)
 
-        register("registerVersion", CallVersionFunctionTask::class) {
-            functionEndpoint = CallVersionFunctionTask.readVersionFunctionEndpoint(project)
-            gameVersion = minecraftVersion
-            platform = project.name
-            platformVersion = "0.15.+"
-            modName = modId
-            changelog = "Version ${project.version}"
-            homepage = "https://modrinth.com/project/automatic-potato"
-            isDryRun = releaseDebug
+signing {
+    sign(publishing.publications)
+    sign(remapJarTask)
+}
+
+tasks {
+    val jksSignJar = register("jksSignJar") {
+        dependsOn(remapJar)
+        onlyIf {
+            project.hasProperty("jarSign.keyAlias") &&
+                    project.hasProperty("jarSign.keyLocation") &&
+                    project.hasProperty("jarSign.storePass")
         }
-        register("checkReleaseVersion", CallVersionCheckFunctionTask::class) {
-            gameVersion = minecraftVersion
-            platform = project.name
-            modName = modId
-            version = project.version.toString()
-            failIfExists = !releaseDebug
+        doLast {
+            ant.withGroovyBuilder {
+                "signjar"(
+                    "jar" to remapJar.flatMap { it.archiveFile }.get(),
+                    "alias" to project.findProperty("jarSign.keyAlias"),
+                    "keystore" to project.findProperty("jarSign.keyLocation"),
+                    "storepass" to project.findProperty("jarSign.storePass"),
+                    "sigalg" to "Ed25519",
+                    "digestalg" to "SHA-256",
+                    "tsaurl" to "http://timestamp.digicert.com",
+                )
+            }
+        }
+    }
+    remapJar {
+        finalizedBy(jksSignJar)
+    }
+    withType(Sign::class) {
+        onlyIf { hasGpgSignature }
+    }
+    withType(AbstractPublishToMaven::class) {
+        if (hasGpgSignature) {
+            dependsOn("signRemapJar")
         }
     }
 
-    publishMods {
-        dryRun = releaseDebug
-        type = STABLE
-        file = remapJar.archiveFile
-        additionalFiles = files(
-            tasks.named("sourcesJar")
-        )
-        modLoaders = listOf(project.name)
-        displayName = "${project.version}-${project.name}"
-        changelog = "See https://github.com/Kotori316/automatic-potato"
+    register("registerVersion", CallVersionFunctionTask::class) {
+        functionEndpoint = CallVersionFunctionTask.readVersionFunctionEndpoint(project)
+        gameVersion = minecraftVersion
+        platform = project.name
+        platformVersion = "0.15.+"
+        modName = modId
+        changelog = "Version ${project.version}"
+        homepage = "https://modrinth.com/project/automatic-potato"
+        isDryRun = releaseDebug
+    }
+    register("checkReleaseVersion", CallVersionCheckFunctionTask::class) {
+        gameVersion = minecraftVersion
+        platform = project.name
+        modName = modId
+        version = project.version.toString()
+        failIfExists = !releaseDebug
+    }
+}
 
-        curseforge {
-            accessToken = (
-                    project.findProperty("curseforge_additional-enchanted-miner_key")
-                        ?: System.getenv("CURSE_TOKEN")
-                        ?: "") as String
-            projectId = "973884"
-            minecraftVersions = publishMcVersion
-        }
+publishMods {
+    dryRun = releaseDebug
+    type = STABLE
+    file = remapJarTask.archiveFile
+    additionalFiles = files(
+        tasks.named("sourcesJar")
+    )
+    modLoaders = listOf(project.name)
+    displayName = "${project.version}-${project.name}"
+    changelog = "See https://github.com/Kotori316/automatic-potato"
 
-        modrinth {
-            accessToken = (project.findProperty("modrinthToken") ?: System.getenv("MODRINTH_TOKEN") ?: "") as String
-            projectId = "fLArsyMM"
-            minecraftVersions = publishMcVersion
-        }
+    curseforge {
+        accessToken = (
+                project.findProperty("curseforge_additional-enchanted-miner_key")
+                    ?: System.getenv("CURSE_TOKEN")
+                    ?: "") as String
+        projectId = "973884"
+        minecraftVersions = publishMcVersion
+    }
+
+    modrinth {
+        accessToken = (project.findProperty("modrinthToken") ?: System.getenv("MODRINTH_TOKEN") ?: "") as String
+        projectId = "fLArsyMM"
+        minecraftVersions = publishMcVersion
     }
 }
 
