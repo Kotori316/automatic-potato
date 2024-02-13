@@ -25,6 +25,7 @@ public final class VersionCheckerMod implements ModInitializer {
         String minecraftVersion = FabricLoader.getInstance().getModContainer("minecraft").map(ModContainer::getMetadata).map(ModMetadata::getVersion).map(Version::getFriendlyString).orElse("none");
         List<EntrypointContainer<VersionCheckerEntrypoint>> list = FabricLoader.getInstance().getEntrypointContainers(KEY, VersionCheckerEntrypoint.class);
         Stream<ModWithVersion> fromEntryPoint = list.stream()
+            .filter(e -> e.getEntrypoint().enabled())
             .map(e -> new ModWithVersion(
                 e.getProvider().getMetadata().getId(),
                 e.getProvider().getMetadata().getVersion(),

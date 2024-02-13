@@ -62,6 +62,9 @@ final class ModWithVersion {
         }
     }
 
+    /**
+     * @see <a href="https://docs.minecraftforge.net/en/1.20.x/misc/updatechecker/">Forge Update Checker</a>
+     */
     private static void compareVersion(JsonObject jsonObject, String minecraftVersion, String modId, Version modVersion) {
         Optional<String> homepage = Optional.ofNullable(jsonObject.get("homepage")).map(JsonElement::getAsString);
         Version latestVersion = Optional.ofNullable(jsonObject.getAsJsonObject("promos"))

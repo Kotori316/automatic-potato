@@ -9,4 +9,8 @@ public interface VersionCheckerEntrypoint {
     default Optional<String> targetMinecraftVersion() {
         return Optional.empty();
     }
+
+    default boolean enabled() {
+        return true;
+    }
 }
