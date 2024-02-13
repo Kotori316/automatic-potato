@@ -1,5 +1,7 @@
 package com.kotori316.ap;
 
+import com.kotori316.ap.api.VersionCheckerEntrypoint;
+
 import java.net.URI;
 import java.util.Optional;
 

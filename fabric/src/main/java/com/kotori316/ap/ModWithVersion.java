@@ -4,6 +4,8 @@ import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonReader;
+import com.kotori316.ap.api.VersionStatus;
+import com.kotori316.ap.api.VersionStatusHolder;
 import net.fabricmc.loader.api.Version;
 import net.fabricmc.loader.api.VersionParsingException;
 import org.apache.http.client.config.RequestConfig;
@@ -17,6 +19,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.net.URI;
 import java.util.Optional;
+import java.util.function.Consumer;
 
 final class ModWithVersion {
     private final String modId;
@@ -24,13 +27,15 @@ final class ModWithVersion {
     private final URI versionJsonUrl;
     private final String minecraftVersion;
     private final String loaderVersion;
+    private final Consumer<VersionStatusHolder> consumer;
 
-    ModWithVersion(String modId, Version modVersion, URI versionJsonUrl, String minecraftVersion, String loaderVersion) {
+    ModWithVersion(String modId, Version modVersion, URI versionJsonUrl, String minecraftVersion, String loaderVersion, Consumer<VersionStatusHolder> consumer) {
         this.modId = modId;
         this.modVersion = modVersion;
         this.versionJsonUrl = versionJsonUrl;
         this.minecraftVersion = minecraftVersion;
         this.loaderVersion = loaderVersion;
+        this.consumer = consumer;
     }
 
     void check() {
@@ -55,7 +60,7 @@ final class ModWithVersion {
                     return;
                 }
                 JsonObject jsonObject = gson.fromJson(jsonReader, JsonObject.class);
-                compareVersion(jsonObject, minecraftVersion, modId, modVersion);
+                compareVersion(jsonObject, minecraftVersion, modId, modVersion, consumer);
             }
         } catch (Exception e) {
             VersionCheckerMod.LOGGER.warn("Failed to get version JSON for {}. Message: {}", modId, e.getMessage());
@@ -65,7 +70,7 @@ final class ModWithVersion {
     /**
      * @see <a href="https://docs.minecraftforge.net/en/1.20.x/misc/updatechecker/">Forge Update Checker</a>
      */
-    private static void compareVersion(JsonObject jsonObject, String minecraftVersion, String modId, Version modVersion) {
+    private static void compareVersion(JsonObject jsonObject, String minecraftVersion, String modId, Version modVersion, Consumer<VersionStatusHolder> consumer) {
         Optional<String> homepage = Optional.ofNullable(jsonObject.get("homepage")).map(JsonElement::getAsString);
         Version latestVersion = Optional.ofNullable(jsonObject.getAsJsonObject("promos"))
             .map(j -> j.get(minecraftVersion + "-latest"))
@@ -77,17 +82,15 @@ final class ModWithVersion {
             return;
         }
         int compare = modVersion.compareTo(latestVersion);
+        VersionStatus status;
         if (compare > 0) {
-            // Ahead
-            VersionCheckerMod.LOGGER.info("Using ahead version '{}' for {}", modVersion, modId);
+            status = VersionStatus.AHEAD;
         } else if (compare == 0) {
-            // Latest
-            VersionCheckerMod.LOGGER.info("Using the latest version, '{}' for {}", modVersion, modId);
+            status = VersionStatus.LATEST;
         } else {
-            // Outdated
-            VersionCheckerMod.LOGGER.info("Using outdated version for {}. Latest: '{}', Current: '{}', Homepage: {}",
-                modId, latestVersion.getFriendlyString(), modVersion, homepage.orElse("not present"));
+            status = VersionStatus.OUTDATED;
         }
+        consumer.accept(new VersionStatusHolder(status, modId, homepage.orElse(null), latestVersion, modVersion));
     }
 
     Runnable asRunnable() {

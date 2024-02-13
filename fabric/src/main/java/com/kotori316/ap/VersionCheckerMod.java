@@ -1,5 +1,6 @@
 package com.kotori316.ap;
 
+import com.kotori316.ap.api.VersionCheckerEntrypoint;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
@@ -17,7 +18,7 @@ import java.util.stream.Stream;
 public final class VersionCheckerMod implements ModInitializer {
     public static final String MOD_ID = "kotori316_version_checker";
     public static final String KEY = MOD_ID;
-    static final Logger LOGGER = LogManager.getLogger("ForgeLikeVersionChecker");
+    public static final Logger LOGGER = LogManager.getLogger("ForgeLikeVersionChecker");
 
     @Override
     public void onInitialize() {
@@ -31,7 +32,8 @@ public final class VersionCheckerMod implements ModInitializer {
                 e.getProvider().getMetadata().getVersion(),
                 e.getEntrypoint().versionJsonUrl(),
                 e.getEntrypoint().targetMinecraftVersion().orElse(minecraftVersion),
-                loaderVersion
+                loaderVersion,
+                e.getEntrypoint()::log
             ));
         Stream<ModWithVersion> fromCustom = FabricLoader.getInstance()
             .getAllMods()
@@ -46,7 +48,8 @@ public final class VersionCheckerMod implements ModInitializer {
                         m.getVersion(),
                         URI.create(uri),
                         minecraftVersion,
-                        loaderVersion
+                        loaderVersion,
+                        VersionCheckerEntrypoint::logVersionInfo
                     ));
                 } catch (RuntimeException e) {
                     LOGGER.warn("Invalid configuration of {} in {}", KEY, m.getId());
