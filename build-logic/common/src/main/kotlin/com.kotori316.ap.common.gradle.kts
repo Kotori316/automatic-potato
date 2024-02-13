@@ -5,7 +5,7 @@ plugins {
 base {
     archivesName = "VersionCheckerMod"
     group = "com.kotori316"
-    version = project.property("version")!!
+    version = project.property("modVersion")!!
 }
 
 java {
@@ -22,7 +22,7 @@ val minecraftVersion: String by project
 tasks.processResources {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
     val version = project.version.toString()
-    inputs.property("version", version)
+    inputs.property("modVersion", version)
     listOf("fabric.mod.json", "META-INF/mods.toml").forEach { fileName ->
         filesMatching(fileName) {
             expand(
