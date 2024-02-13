@@ -8,6 +8,7 @@ import com.kotori316.ap.api.VersionStatus;
 import com.kotori316.ap.api.VersionStatusHolder;
 import net.fabricmc.loader.api.Version;
 import net.fabricmc.loader.api.VersionParsingException;
+import org.apache.http.HttpVersion;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
@@ -46,10 +47,11 @@ final class ModWithVersion {
             .build();
         Gson gson = new Gson();
 
-        try (CloseableHttpClient client = HttpClientBuilder.create().setUserAgent(
-            String.format("%s Java/%s Minecraft/%s Fabric/%s", modId, System.getProperty("java.vendor.version"), minecraftVersion, loaderVersion)
-        ).setDefaultRequestConfig(config).build()) {
+        String userAgent = String.format("%s Java/%s Minecraft/%s Fabric/%s", modId, System.getProperty("java.vendor.version"), minecraftVersion, loaderVersion);
+        try (CloseableHttpClient client = HttpClientBuilder.create().setUserAgent(userAgent).setDefaultRequestConfig(config).build()) {
             HttpGet get = new HttpGet(this.versionJsonUrl);
+            get.setProtocolVersion(HttpVersion.HTTP_1_1);
+            VersionCheckerMod.LOGGER.debug("Access to {} with UA '{}'", get, userAgent);
             try (CloseableHttpResponse response = client.execute(get);
                  BufferedInputStream stream = new BufferedInputStream(response.getEntity().getContent());
                  Reader reader = new InputStreamReader(stream);
