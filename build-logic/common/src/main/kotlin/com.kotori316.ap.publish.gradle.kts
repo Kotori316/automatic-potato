@@ -15,10 +15,12 @@ val minecraftVersion: String by project
 val releaseDebug = (System.getenv("RELEASE_DEBUG") ?: "true").toBoolean()
 val publishMcVersion = listOf(
     "1.16.5",
-    "1.17.2",
+    "1.17.1",
     "1.18.2",
     "1.19.2",
+    "1.19.4",
     "1.20.1",
+    "1.20.2",
     "1.20.4",
 )
 val hasGpgSignature = project.hasProperty("signing.keyId") &&
