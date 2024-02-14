@@ -8,16 +8,12 @@ import com.kotori316.ap.api.VersionStatus;
 import com.kotori316.ap.api.VersionStatusHolder;
 import net.fabricmc.loader.api.Version;
 import net.fabricmc.loader.api.VersionParsingException;
-import org.apache.http.HttpVersion;
-import org.apache.http.client.config.RequestConfig;
-import org.apache.http.client.methods.CloseableHttpResponse;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 
-import java.io.BufferedInputStream;
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.Reader;
+import java.net.HttpURLConnection;
 import java.net.URI;
 import java.util.Optional;
 import java.util.function.Consumer;
@@ -40,31 +36,30 @@ final class ModWithVersion {
     }
 
     void check() {
-        RequestConfig config = RequestConfig.custom()
-            .setSocketTimeout(5000)
-            .setConnectTimeout(5000)
-            .setMaxRedirects(5)
-            .build();
         Gson gson = new Gson();
 
         String userAgent = String.format("%s Java/%s Minecraft/%s Fabric/%s", modId, System.getProperty("java.vendor.version"), minecraftVersion, loaderVersion);
-        try (CloseableHttpClient client = HttpClientBuilder.create().setUserAgent(userAgent).setDefaultRequestConfig(config).build()) {
-            HttpGet get = new HttpGet(this.versionJsonUrl);
-            get.setProtocolVersion(HttpVersion.HTTP_1_1);
-            VersionCheckerMod.LOGGER.debug("Access to {} with UA '{}'", get, userAgent);
-            try (CloseableHttpResponse response = client.execute(get);
-                 BufferedInputStream stream = new BufferedInputStream(response.getEntity().getContent());
-                 Reader reader = new InputStreamReader(stream);
+        try {
+            VersionCheckerMod.LOGGER.debug("Access to {} for {}({}) with UA '{}'", this.versionJsonUrl, this.modId, this.modVersion, userAgent);
+            HttpURLConnection connection = (HttpURLConnection) this.versionJsonUrl.toURL().openConnection();
+            connection.setInstanceFollowRedirects(true);
+            connection.setRequestMethod("GET");
+            connection.setConnectTimeout(5000);
+            connection.setReadTimeout(5000);
+            connection.setRequestProperty("User-Agent", userAgent);
+
+            try (InputStream inputStream = connection.getInputStream();
+                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
                  JsonReader jsonReader = new JsonReader(reader)
             ) {
-                if (response.getStatusLine().getStatusCode() >= 300) {
-                    VersionCheckerMod.LOGGER.warn("Failed to get version JSON for {}. Message: {}", modId, response.getStatusLine().getReasonPhrase());
+                if (connection.getResponseCode() >= 300) {
+                    VersionCheckerMod.LOGGER.warn("Failed to get version JSON for {}. Message: {}", modId, connection.getResponseMessage());
                     return;
                 }
                 JsonObject jsonObject = gson.fromJson(jsonReader, JsonObject.class);
                 compareVersion(jsonObject, minecraftVersion, modId, modVersion, consumer);
             }
-        } catch (Exception e) {
+        } catch (IOException e) {
             VersionCheckerMod.LOGGER.warn("Failed to get version JSON for {}. Message: {}", modId, e.getMessage());
         }
     }
