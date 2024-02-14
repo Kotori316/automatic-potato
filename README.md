@@ -31,7 +31,7 @@ After preparing the JSON, set the URL in "custom" in `fabric.mod.json`.
 ```
 
 A complete example can be found in this repo.
-https://github.com/Kotori316/automatic-potato/blob/main/fabric/src/main/resources/fabric.mod.json
+https://github.com/Kotori316/automatic-potato/blob/main/example/fabric.mod.json
 
 ## Dynamic implementation
 
@@ -51,12 +51,15 @@ dependencies {
 }
 ```
 
-Then, create a class implementing `com.kotori316.ap.api.VersionCheckerEntrypoint`, and set the class in entrypoint in
+Then, create a class implementing `com.kotori316.ap.api.VersionCheckerEntrypoint`, and set the class in entrypoints in
 your `fabric.mod.json`.
 
 ```json
 {
   "entrypoints": {
+    "main": [
+      "your_mod_entrypoint"
+    ],
     "kotori316_version_checker": [
       "com.kotori316.ap.VersionCheckerEntrypointImpl"
     ]

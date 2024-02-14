@@ -16,9 +16,4 @@ public final class VersionCheckerEntrypointImpl implements VersionCheckerEntrypo
     public Optional<String> targetMinecraftVersion() {
         return Optional.of("1.16.5");
     }
-
-    @Override
-    public boolean enabled() {
-        return false;
-    }
 }
