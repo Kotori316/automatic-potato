@@ -36,10 +36,8 @@ final class ModWithVersion {
     }
 
     void check() {
-        Gson gson = new Gson();
-
-        String userAgent = String.format("%s Java/%s Minecraft/%s Fabric/%s", modId, System.getProperty("java.vendor.version"), minecraftVersion, loaderVersion);
         try {
+            String userAgent = String.format("%s Java/%s Minecraft/%s Fabric/%s", modId, System.getProperty("java.vendor.version"), minecraftVersion, loaderVersion);
             VersionCheckerMod.LOGGER.debug("Access to {} for {}({}) with UA '{}'", this.versionJsonUrl, this.modId, this.modVersion, userAgent);
             HttpURLConnection connection = (HttpURLConnection) this.versionJsonUrl.toURL().openConnection();
             connection.setInstanceFollowRedirects(true);
@@ -53,14 +51,17 @@ final class ModWithVersion {
                  JsonReader jsonReader = new JsonReader(reader)
             ) {
                 if (connection.getResponseCode() >= 300) {
-                    VersionCheckerMod.LOGGER.warn("Failed to get version JSON for {}. Message: {}", modId, connection.getResponseMessage());
+                    VersionCheckerMod.LOGGER.warn("Failed to get version JSON for {}. Message: {}, Status: {}", modId, connection.getResponseMessage(), connection.getResponseCode());
                     return;
                 }
+                Gson gson = new Gson();
                 JsonObject jsonObject = gson.fromJson(jsonReader, JsonObject.class);
+                VersionCheckerMod.LOGGER.debug("Get json for {}: {}", this.modId, jsonObject);
                 compareVersion(jsonObject, minecraftVersion, modId, modVersion, consumer);
             }
         } catch (IOException e) {
             VersionCheckerMod.LOGGER.warn("Failed to get version JSON for {}. Message: {}", modId, e.getMessage());
+            VersionCheckerMod.LOGGER.debug("Stacktrace of {}({})", this.modId, this.modVersion, e);
         }
     }
 
