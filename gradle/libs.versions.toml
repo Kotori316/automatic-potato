@@ -14,5 +14,5 @@ fabric_loader = { group = "net.fabricmc", name = "fabric-loader", version.ref = 
 
 [plugins]
 cf = { id = "com.kotori316.plugin.cf", version.ref = "plugin_cf" }
-publish_all = { "id" = "me.modmuss50.mod-publish-plugin", version.ref = "plugin_publish_all" }
-loom = { "id" = "fabric-loom", version.ref = "fabric_loom" }
+publish_all = { id = "me.modmuss50.mod-publish-plugin", version.ref = "plugin_publish_all" }
+loom = { id = "fabric-loom", version.ref = "fabric_loom" }
