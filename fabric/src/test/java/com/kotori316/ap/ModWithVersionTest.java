@@ -85,8 +85,15 @@ class ModWithVersionTest {
             ModWithVersion.compareVersion(this.response, "1.16.5", VersionCheckerMod.MOD_ID,
                 Version.parse("2.2.0"), ref::set);
 
-            assertNotNull(ref.get(), "Version must be set");
-            assertEquals(VersionStatus.LATEST, ref.get().versionStatus());
+            VersionStatusHolder statusHolder = ref.get();
+            assertNotNull(statusHolder, "Version must be set");
+            assertAll(
+                () -> assertEquals(VersionStatus.LATEST, statusHolder.versionStatus()),
+                () -> assertEquals(VersionCheckerMod.MOD_ID, statusHolder.modId()),
+                () -> assertEquals(Version.parse("2.2.0"), statusHolder.latestVersion()),
+                () -> assertEquals(Version.parse("2.2.0"), statusHolder.currentVersion()),
+                () -> assertEquals("https://modrinth.com/project/automatic-potato", statusHolder.homepage())
+            );
         }
 
         @Test
@@ -95,8 +102,10 @@ class ModWithVersionTest {
             ModWithVersion.compareVersion(this.response, "1.16.5", VersionCheckerMod.MOD_ID,
                 Version.parse("2.3.0"), ref::set);
 
-            assertNotNull(ref.get(), "Version must be set");
-            assertEquals(VersionStatus.AHEAD, ref.get().versionStatus());
+            VersionStatusHolder statusHolder = ref.get();
+            assertNotNull(statusHolder, "Version must be set");
+            assertEquals(VersionStatus.AHEAD, statusHolder.versionStatus());
+            assertEquals(Version.parse("2.3.0"), statusHolder.currentVersion());
         }
 
         @Test
@@ -105,8 +114,22 @@ class ModWithVersionTest {
             ModWithVersion.compareVersion(this.response, "1.16.5", VersionCheckerMod.MOD_ID,
                 Version.parse("2.0.0"), ref::set);
 
-            assertNotNull(ref.get(), "Version must be set");
-            assertEquals(VersionStatus.OUTDATED, ref.get().versionStatus());
+            VersionStatusHolder statusHolder = ref.get();
+            assertNotNull(statusHolder, "Version must be set");
+            assertEquals(VersionStatus.OUTDATED, statusHolder.versionStatus());
+            assertEquals(Version.parse("2.0.0"), statusHolder.currentVersion());
+        }
+
+        @Test
+        void outdated2() throws VersionParsingException {
+            AtomicReference<VersionStatusHolder> ref = new AtomicReference<>();
+            ModWithVersion.compareVersion(this.response, "1.16.5", VersionCheckerMod.MOD_ID,
+                Version.parse("1.0.0"), ref::set);
+
+            VersionStatusHolder statusHolder = ref.get();
+            assertNotNull(statusHolder, "Version must be set");
+            assertEquals(VersionStatus.OUTDATED, statusHolder.versionStatus());
+            assertEquals(Version.parse("1.0.0"), statusHolder.currentVersion());
         }
 
         @Test
