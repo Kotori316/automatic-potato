@@ -22,22 +22,24 @@ final class ModWithVersion {
     private final String modId;
     private final Version modVersion;
     private final URI versionJsonUrl;
-    private final String minecraftVersion;
+    private final String targetMinecraftVersion;
+    private final String actualMinecraftVersion;
     private final String loaderVersion;
     private final Consumer<VersionStatusHolder> consumer;
 
-    ModWithVersion(String modId, Version modVersion, URI versionJsonUrl, String minecraftVersion, String loaderVersion, Consumer<VersionStatusHolder> consumer) {
+    ModWithVersion(String modId, Version modVersion, URI versionJsonUrl, String targetMinecraftVersion, String actualMinecraftVersion, Consumer<VersionStatusHolder> consumer, String loaderVersion) {
         this.modId = modId;
         this.modVersion = modVersion;
         this.versionJsonUrl = versionJsonUrl;
-        this.minecraftVersion = minecraftVersion;
+        this.targetMinecraftVersion = targetMinecraftVersion;
+        this.actualMinecraftVersion = actualMinecraftVersion;
         this.loaderVersion = loaderVersion;
         this.consumer = consumer;
     }
 
     void check() {
         try {
-            String userAgent = String.format("%s Java/%s Minecraft/%s Fabric/%s", modId, System.getProperty("java.vendor.version"), minecraftVersion, loaderVersion);
+            String userAgent = this.getUa();
             VersionCheckerMod.LOGGER.debug("Access to {} for {}({}) with UA '{}'", this.versionJsonUrl, this.modId, this.modVersion, userAgent);
             HttpURLConnection connection = (HttpURLConnection) this.versionJsonUrl.toURL().openConnection();
             connection.setInstanceFollowRedirects(true);
@@ -57,7 +59,7 @@ final class ModWithVersion {
                 Gson gson = new Gson();
                 JsonObject jsonObject = gson.fromJson(jsonReader, JsonObject.class);
                 VersionCheckerMod.LOGGER.debug("Get json for {}: {}", this.modId, jsonObject);
-                compareVersion(jsonObject, minecraftVersion, modId, modVersion, consumer);
+                compareVersion(jsonObject, targetMinecraftVersion, modId, modVersion, consumer);
             }
         } catch (IOException e) {
             VersionCheckerMod.LOGGER.warn("Failed to get version JSON for {}. Message: {}", modId, e.getMessage());
@@ -65,10 +67,14 @@ final class ModWithVersion {
         }
     }
 
+    String getUa() {
+        return String.format("%s Java/%s Minecraft/%s Fabric/%s", modId, System.getProperty("java.vendor.version"), actualMinecraftVersion, loaderVersion);
+    }
+
     /**
      * @see <a href="https://docs.minecraftforge.net/en/1.20.x/misc/updatechecker/">Forge Update Checker</a>
      */
-    private static void compareVersion(JsonObject jsonObject, String minecraftVersion, String modId, Version modVersion, Consumer<VersionStatusHolder> consumer) {
+    static void compareVersion(JsonObject jsonObject, String minecraftVersion, String modId, Version modVersion, Consumer<VersionStatusHolder> consumer) {
         Optional<String> homepage = Optional.ofNullable(jsonObject.get("homepage")).map(JsonElement::getAsString);
         Version latestVersion = Optional.ofNullable(jsonObject.getAsJsonObject("promos"))
             .map(j -> j.get(minecraftVersion + "-latest"))

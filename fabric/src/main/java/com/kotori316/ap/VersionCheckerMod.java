@@ -32,8 +32,9 @@ public final class VersionCheckerMod implements ModInitializer {
                 e.getProvider().getMetadata().getVersion(),
                 e.getEntrypoint().versionJsonUrl(),
                 e.getEntrypoint().targetMinecraftVersion().orElse(minecraftVersion),
-                loaderVersion,
-                e.getEntrypoint()::log
+                minecraftVersion,
+                e.getEntrypoint()::log,
+                loaderVersion
             ));
         Stream<ModWithVersion> fromCustom = FabricLoader.getInstance()
             .getAllMods()
@@ -48,9 +49,9 @@ public final class VersionCheckerMod implements ModInitializer {
                         m.getVersion(),
                         URI.create(uri),
                         minecraftVersion,
-                        loaderVersion,
-                        VersionCheckerEntrypoint::logVersionInfo
-                    ));
+                        minecraftVersion,
+                        VersionCheckerEntrypoint::logVersionInfo,
+                        loaderVersion));
                 } catch (RuntimeException e) {
                     LOGGER.warn("Invalid configuration of {} in {}", KEY, m.getId());
                     return Stream.empty();
