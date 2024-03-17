@@ -1,0 +1,13 @@
+{
+  "homepage": "https://modrinth.com/project/automatic-potato",
+  "promos": {
+    "1.16.5-latest": "2.2.0"
+  },
+  "1.16.5": {
+    "2.2.0": "Version 2.2.0",
+    "2.1.0": "Version 2.1.0",
+    "2.0.1": "Version 2.0.1",
+    "1.1.0": "Version 1.1.0",
+    "1.0.0": "Version 1.0.0"
+  }
+}

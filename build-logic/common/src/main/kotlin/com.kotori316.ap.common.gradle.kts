@@ -15,6 +15,13 @@ java {
     }
 }
 
+dependencies {
+    // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
+    testImplementation(platform("org.junit:junit-bom:5.10.2"))
+    testImplementation("org.junit.jupiter:junit-jupiter")
+    testRuntimeOnly("org.junit.platform:junit-platform-launcher")
+}
+
 val modId: String by project
 // Fixed. Use 1.16.5
 val minecraftVersion: String by project
@@ -32,4 +39,8 @@ tasks.processResources {
             )
         }
     }
+}
+
+tasks.test {
+    useJUnitPlatform()
 }
