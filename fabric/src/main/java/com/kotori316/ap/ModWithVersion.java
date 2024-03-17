@@ -82,7 +82,7 @@ final class ModWithVersion {
             .map(ModWithVersion::parseVersion)
             .orElse(null);
         if (latestVersion == null) {
-            VersionCheckerMod.LOGGER.info("No version found for {}", modId);
+            VersionCheckerMod.LOGGER.info("No version found for {}({}) for Minecraft {}", modId, modVersion, minecraftVersion);
             return;
         }
         int compare = modVersion.compareTo(latestVersion);
