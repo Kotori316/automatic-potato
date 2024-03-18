@@ -77,7 +77,10 @@ final class ModWithVersion {
     static void compareVersion(JsonObject jsonObject, String minecraftVersion, String modId, Version modVersion, Consumer<VersionStatusHolder> consumer) {
         Optional<String> homepage = Optional.ofNullable(jsonObject.get("homepage")).map(JsonElement::getAsString);
         Version latestVersion = Optional.ofNullable(jsonObject.getAsJsonObject("promos"))
-            .map(j -> j.get(minecraftVersion + "-latest"))
+            .map(j ->
+                Optional.ofNullable(j.get(minecraftVersion + "-latest"))
+                    .orElseGet(() -> j.get(minecraftVersion + "-recommended"))
+            )
             .map(JsonElement::getAsString)
             .map(ModWithVersion::parseVersion)
             .orElse(null);

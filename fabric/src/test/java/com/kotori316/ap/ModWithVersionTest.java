@@ -140,4 +140,68 @@ class ModWithVersionTest {
             assertNull(ref.get());
         }
     }
+
+    @Nested
+    class GetRecommendedVersion {
+        JsonObject response;
+
+        @BeforeEach
+        void setup() throws IOException {
+            try (InputStream stream = Objects.requireNonNull(
+                ModWithVersionTest.class.getResourceAsStream("/response/1.19-recommended.json"),
+                "Response reading stream is null"
+            );
+                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream))
+            ) {
+                this.response = new Gson().fromJson(reader, JsonObject.class);
+            }
+            assertNotNull(this.response);
+        }
+
+        @Test
+        void latest() throws VersionParsingException {
+            AtomicReference<VersionStatusHolder> ref = new AtomicReference<>();
+            ModWithVersion.compareVersion(this.response, "1.19", VersionCheckerMod.MOD_ID,
+                Version.parse("19.0.1"), ref::set);
+
+            VersionStatusHolder statusHolder = ref.get();
+            assertNotNull(statusHolder, "Version must be set");
+            assertEquals(VersionStatus.LATEST, statusHolder.versionStatus());
+            assertEquals(Version.parse("19.0.1"), statusHolder.currentVersion());
+        }
+
+        @Test
+        void ahead() throws VersionParsingException {
+            AtomicReference<VersionStatusHolder> ref = new AtomicReference<>();
+            ModWithVersion.compareVersion(this.response, "1.19", VersionCheckerMod.MOD_ID,
+                Version.parse("19.1.0"), ref::set);
+
+            VersionStatusHolder statusHolder = ref.get();
+            assertNotNull(statusHolder, "Version must be set");
+            assertEquals(VersionStatus.AHEAD, statusHolder.versionStatus());
+            assertEquals(Version.parse("19.1.0"), statusHolder.currentVersion());
+            assertEquals(Version.parse("19.0.1"), statusHolder.latestVersion());
+        }
+
+        @Test
+        void useLatest() throws VersionParsingException, IOException {
+            JsonObject response;
+            try (InputStream stream = Objects.requireNonNull(
+                ModWithVersionTest.class.getResourceAsStream("/response/1.19-latest.json"),
+                "Response reading stream is null"
+            );
+                 BufferedReader reader = new BufferedReader(new InputStreamReader(stream))
+            ) {
+                response = new Gson().fromJson(reader, JsonObject.class);
+            }
+            AtomicReference<VersionStatusHolder> ref = new AtomicReference<>();
+            ModWithVersion.compareVersion(response, "1.19", VersionCheckerMod.MOD_ID,
+                Version.parse("19.1.1"), ref::set);
+
+            VersionStatusHolder statusHolder = ref.get();
+            assertNotNull(statusHolder, "Version must be set");
+            assertEquals(VersionStatus.LATEST, statusHolder.versionStatus());
+            assertEquals(Version.parse("19.1.1"), statusHolder.currentVersion());
+        }
+    }
 }
