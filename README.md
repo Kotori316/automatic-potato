@@ -14,7 +14,8 @@ See Forge document for detail.
 
 [Forge Update Checker]: https://docs.minecraftforge.net/en/1.20.x/misc/updatechecker/
 
-This mod supports homepage and promos.<mcversion>-latest fields.
+This mod supports homepage, promos.<mcversion>-latest and promos.<mcversion>-recommended(if latest is not present)
+fields.
 Other entries including the changelog are not loaded currently.
 The mod version and latest version will be compared, then the result will be logged in console.
 
