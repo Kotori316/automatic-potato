@@ -3,6 +3,7 @@ package com.kotori316.ap;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import com.google.gson.JsonParseException;
 import com.google.gson.stream.JsonReader;
 import com.kotori316.ap.api.VersionStatus;
 import com.kotori316.ap.api.VersionStatusHolder;
@@ -37,15 +38,19 @@ final class ModWithVersion {
         this.consumer = consumer;
     }
 
-    void check() {
+    CheckConnectionStatus check() {
+        return check(5000);
+    }
+
+    CheckConnectionStatus check(int timeout) {
         try {
             String userAgent = this.getUa();
             VersionCheckerMod.LOGGER.debug("Access to {} for {}({}) with UA '{}'", this.versionJsonUrl, this.modId, this.modVersion, userAgent);
             HttpURLConnection connection = (HttpURLConnection) this.versionJsonUrl.toURL().openConnection();
             connection.setInstanceFollowRedirects(true);
             connection.setRequestMethod("GET");
-            connection.setConnectTimeout(5000);
-            connection.setReadTimeout(5000);
+            connection.setConnectTimeout(timeout);
+            connection.setReadTimeout(timeout);
             connection.setRequestProperty("User-Agent", userAgent);
             connection.setRequestProperty("Accept", "application/json");
             connection.connect();
@@ -62,16 +67,20 @@ final class ModWithVersion {
                         JsonObject jsonObject = gson.fromJson(jsonReader, JsonObject.class);
                         VersionCheckerMod.LOGGER.debug("Get json for {}/{}: {}", this.modId, this.modVersion, jsonObject);
                         compareVersion(jsonObject, targetMinecraftVersion, modId, modVersion, consumer);
+                        return CheckConnectionStatus.OK;
                     }
                 } else {
                     VersionCheckerMod.LOGGER.warn("Expected application/json, but got {} for {}/{}", contentType, modId, modVersion);
+                    return CheckConnectionStatus.INVALID_CONTENT_TYPE;
                 }
             } else {
                 VersionCheckerMod.LOGGER.warn("Failed to get version JSON for {}/{}. Message: {}, Status: {}", modId, modVersion, connection.getResponseMessage(), connection.getResponseCode());
+                return CheckConnectionStatus.INVALID_STATUS_CODE;
             }
-        } catch (IOException e) {
+        } catch (IOException | JsonParseException e) {
             VersionCheckerMod.LOGGER.warn("Failed to get version JSON for {}/{}. Message: {}", modId, modVersion, e.getMessage());
             VersionCheckerMod.LOGGER.debug("Stacktrace of {}({})", this.modId, this.modVersion, e);
+            return CheckConnectionStatus.ERROR;
         }
     }
 
