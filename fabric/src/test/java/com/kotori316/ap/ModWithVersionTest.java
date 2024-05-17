@@ -53,8 +53,9 @@ class ModWithVersionTest {
 
     @Test
     void userAgent() {
-        String expected = String.format("%s Java/%s Minecraft/%s Fabric/%s",
+        String expected = String.format("%s/%s Java/%s Minecraft/%s Fabric/%s",
             VersionCheckerMod.MOD_ID,
+            "1.0.0",
             System.getProperty("java.vendor.version"),
             "1.20.5",
             "1.0"
