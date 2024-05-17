@@ -47,28 +47,36 @@ final class ModWithVersion {
             connection.setConnectTimeout(5000);
             connection.setReadTimeout(5000);
             connection.setRequestProperty("User-Agent", userAgent);
+            connection.setRequestProperty("Accept", "application/json");
+            connection.connect();
 
-            try (InputStream inputStream = connection.getInputStream();
-                 BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
-                 JsonReader jsonReader = new JsonReader(reader)
-            ) {
-                if (connection.getResponseCode() >= 300) {
-                    VersionCheckerMod.LOGGER.warn("Failed to get version JSON for {}. Message: {}, Status: {}", modId, connection.getResponseMessage(), connection.getResponseCode());
-                    return;
+            int responseCode = connection.getResponseCode();
+            if (responseCode == HttpURLConnection.HTTP_OK) {
+                String contentType = connection.getContentType();
+                if (contentType.startsWith("application/json")) {
+                    try (InputStream inputStream = connection.getInputStream();
+                         BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                         JsonReader jsonReader = new JsonReader(reader)
+                    ) {
+                        Gson gson = new Gson();
+                        JsonObject jsonObject = gson.fromJson(jsonReader, JsonObject.class);
+                        VersionCheckerMod.LOGGER.debug("Get json for {}/{}: {}", this.modId, this.modVersion, jsonObject);
+                        compareVersion(jsonObject, targetMinecraftVersion, modId, modVersion, consumer);
+                    }
+                } else {
+                    VersionCheckerMod.LOGGER.warn("Expected application/json, but got {} for {}/{}", contentType, modId, modVersion);
                 }
-                Gson gson = new Gson();
-                JsonObject jsonObject = gson.fromJson(jsonReader, JsonObject.class);
-                VersionCheckerMod.LOGGER.debug("Get json for {}: {}", this.modId, jsonObject);
-                compareVersion(jsonObject, targetMinecraftVersion, modId, modVersion, consumer);
+            } else {
+                VersionCheckerMod.LOGGER.warn("Failed to get version JSON for {}/{}. Message: {}, Status: {}", modId, modVersion, connection.getResponseMessage(), connection.getResponseCode());
             }
         } catch (IOException e) {
-            VersionCheckerMod.LOGGER.warn("Failed to get version JSON for {}. Message: {}", modId, e.getMessage());
+            VersionCheckerMod.LOGGER.warn("Failed to get version JSON for {}/{}. Message: {}", modId, modVersion, e.getMessage());
             VersionCheckerMod.LOGGER.debug("Stacktrace of {}({})", this.modId, this.modVersion, e);
         }
     }
 
     String getUa() {
-        return String.format("%s Java/%s Minecraft/%s Fabric/%s", modId, System.getProperty("java.vendor.version"), actualMinecraftVersion, loaderVersion);
+        return String.format("%s/%s Java/%s Minecraft/%s Fabric/%s", modId, modVersion, System.getProperty("java.vendor.version"), actualMinecraftVersion, loaderVersion);
     }
 
     /**
