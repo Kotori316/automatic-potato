@@ -1,7 +1,7 @@
 [versions]
 # Use 1.16.5 becasue it supports Java 8
 minecraft = "1.16.5"
-plugin_cf = "3.0"
+plugin_cf = "3.1"
 plugin_publish_all = "0.+"
 # https://maven.fabricmc.net/net/fabricmc/fabric-loom/
 fabric_loom = "1.7.2"
