@@ -4,7 +4,7 @@ minecraft = "1.16.5"
 plugin_cf = "3.3"
 plugin_publish_all = "0.+"
 # https://maven.fabricmc.net/net/fabricmc/fabric-loom/
-fabric_loom = "1.10.3"
+fabric_loom = "1.10.4"
 # https://maven.fabricmc.net/net/fabricmc/fabric-loader/
 fabric_loader = "0.16.10"
 
