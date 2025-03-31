@@ -1,7 +1,7 @@
 {
   "schemaVersion": 1,
   "id": "kotori316_version_checker",
-  "version": "2.0.0",
+  "version": "2.5.0",
   "name": "ForgeLikeVersionChecker",
   "description": "Check version from JSON compatible with Forge version checker JSON",
   "authors": [
