@@ -13,26 +13,6 @@ val modId: String by project
 // Fixed. Use 1.16.5
 val minecraftVersion: String by project
 val releaseDebug = (System.getenv("RELEASE_DEBUG") ?: "true").toBoolean()
-val publishMcVersion = listOf(
-    "1.16.5",
-    "1.17",
-    "1.17.1",
-    "1.18",
-    "1.18.1",
-    "1.18.2",
-    "1.19",
-    "1.19.1",
-    "1.19.2",
-    "1.19.3",
-    "1.19.4",
-    "1.20",
-    "1.20.1",
-    "1.20.2",
-    "1.20.3",
-    "1.20.4",
-    "1.20.5",
-    "1.20.6",
-)
 val hasGpgSignature = project.hasProperty("signing.keyId") &&
         project.hasProperty("signing.password") &&
         project.hasProperty("signing.secretKeyRingFile")
@@ -114,13 +94,19 @@ publishMods {
                     ?: System.getenv("CURSE_TOKEN")
                     ?: "") as String
         projectId = "973884"
-        minecraftVersions = publishMcVersion
+        minecraftVersionRange {
+            start = "1.16.5"
+            end = "latest"
+        }
     }
 
     modrinth {
         accessToken = (project.findProperty("modrinthToken") ?: System.getenv("MODRINTH_TOKEN") ?: "") as String
         projectId = "fLArsyMM"
-        minecraftVersions = publishMcVersion
+        minecraftVersionRange {
+            start = "1.16.5"
+            end = "latest"
+        }
     }
 }
 
@@ -133,15 +119,16 @@ publishing {
     }
 
     repositories {
-        if (System.getenv("CLOUDFLARE_S3_ENDPOINT") != null || !releaseDebug) {
-            val r2AccessKey = (project.findProperty("r2_access_key") ?: System.getenv("R2_ACCESS_KEY") ?: "") as String
-            val r2SecretKey = (project.findProperty("r2_secret_key") ?: System.getenv("R2_SECRET_KEY") ?: "") as String
+        val u = project.findProperty("maven_username") as? String ?: System.getenv("MAVEN_USERNAME") ?: ""
+        val p = project.findProperty("maven_password") as? String ?: System.getenv("MAVEN_PASSWORD") ?: ""
+        if (u != "" && p != "") {
             maven {
                 name = "kotori316-maven"
-                url = uri("s3://kotori316-maven")
-                credentials(AwsCredentials::class) {
-                    accessKey = r2AccessKey
-                    secretKey = r2SecretKey
+                // For users: Use https://maven.kotori316.com to get artifacts
+                url = uri("https://maven2.kotori316.com/production/maven")
+                credentials {
+                    username = u
+                    password = p
                 }
             }
         }
