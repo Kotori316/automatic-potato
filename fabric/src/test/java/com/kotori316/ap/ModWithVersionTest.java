@@ -204,5 +204,14 @@ class ModWithVersionTest {
             assertEquals(VersionStatus.LATEST, statusHolder.versionStatus());
             assertEquals(Version.parse("19.1.1"), statusHolder.currentVersion());
         }
+
+        @Test
+        void invalidJson() throws VersionParsingException {
+            AtomicReference<VersionStatusHolder> ref = new AtomicReference<>();
+            JsonObject response = new JsonObject();
+            ModWithVersion.compareVersion(response, "1.19", VersionCheckerMod.MOD_ID,
+                Version.parse("19.1.0"), ref::set);
+            assertNull(ref.get());
+        }
     }
 }
