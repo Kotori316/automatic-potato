@@ -23,7 +23,7 @@ jobs:
       - run: ./gradlew javaToolchains checkReleaseVersion
       - run: ./gradlew publishToMavenLocal build
       - name: Upload artifacts
-        uses: actions/upload-artifact@v5
+        uses: actions/upload-artifact@v6
         with:
           name: automatic-potato-${{ github.run_number }}
           path: "*/build/libs/*.jar"
