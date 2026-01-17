@@ -7,19 +7,24 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
 import java.util.Map;
+import java.util.function.BiFunction;
 import java.util.function.Function;
 
 final class FakeHttpReader implements HttpReader {
-    private final Function<URI, HttpResponse> responseGenerator;
+    private final BiFunction<URI, String, HttpResponse> responseGenerator;
+
+    FakeHttpReader(BiFunction<URI, String, HttpResponse> responseGenerator) {
+        this.responseGenerator = responseGenerator;
+    }
 
     FakeHttpReader(Function<URI, HttpResponse> responseGenerator) {
-        this.responseGenerator = responseGenerator;
+        this.responseGenerator = (uri, method) -> responseGenerator.apply(uri);
     }
 
     @Override
     public HttpResponse read(URI uri, String method, Map<String, String> headers) throws IOException {
         try {
-            return responseGenerator.apply(uri);
+            return responseGenerator.apply(uri, method);
         } catch (RuntimeException e) {
             if (e.getCause() instanceof IOException) {
                 throw (IOException) e.getCause();

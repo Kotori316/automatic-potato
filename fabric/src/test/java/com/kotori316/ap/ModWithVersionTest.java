@@ -34,6 +34,7 @@ class ModWithVersionTest {
                 "1.16.5",
                 "1.20.5",
                 "1.0",
+                "GET",
                 s -> {
                 }
             ),
@@ -51,6 +52,7 @@ class ModWithVersionTest {
                 "1.16.5",
                 "1.20.5",
                 "1.0",
+                "GET",
                 s -> {
                 }
             ),

@@ -16,6 +16,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URI;
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.function.Function;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -46,6 +47,7 @@ final class ModWithVersionConnectionTest {
                     "1.16.5",
                     "1.20.5",
                     "1.0",
+                    "GET",
                     s -> {
                     }
                 ),
@@ -149,5 +151,29 @@ final class ModWithVersionConnectionTest {
         );
         CheckConnectionStatus status = version.check();
         assertEquals(CheckConnectionStatus.ERROR, status);
+    }
+
+    @Test
+    void customMethod() throws Exception {
+        AtomicReference<String> methodRef = new AtomicReference<>();
+        ModWithVersion version = new ModWithVersion(
+            new ModVersionDetail(
+                VersionCheckerMod.MOD_ID,
+                Version.parse("1.0.0"),
+                URI.create("https://example.com"),
+                "1.16.5",
+                "1.20.5",
+                "1.0",
+                "POST",
+                s -> {
+                }
+            ),
+            new FakeHttpReader((uri, method) -> {
+                methodRef.set(method);
+                return new FakeHttpReader.FakeHttpResponse(200, "application/json", new Gson().toJson(response), "OK");
+            })
+        );
+        version.check();
+        assertEquals("POST", methodRef.get());
     }
 }

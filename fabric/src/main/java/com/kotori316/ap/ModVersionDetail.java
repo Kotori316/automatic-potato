@@ -13,15 +13,17 @@ final class ModVersionDetail {
     private final String targetMinecraftVersion;
     private final String actualMinecraftVersion;
     private final String loaderVersion;
+    private final String httpMethod;
     private final Consumer<VersionStatusHolder> consumer;
 
-    ModVersionDetail(String modId, Version modVersion, URI versionJsonUrl, String targetMinecraftVersion, String actualMinecraftVersion, String loaderVersion, Consumer<VersionStatusHolder> consumer) {
+    ModVersionDetail(String modId, Version modVersion, URI versionJsonUrl, String targetMinecraftVersion, String actualMinecraftVersion, String loaderVersion, String httpMethod, Consumer<VersionStatusHolder> consumer) {
         this.modId = modId;
         this.modVersion = modVersion;
         this.versionJsonUrl = versionJsonUrl;
         this.targetMinecraftVersion = targetMinecraftVersion;
         this.actualMinecraftVersion = actualMinecraftVersion;
         this.loaderVersion = loaderVersion;
+        this.httpMethod = httpMethod;
         this.consumer = consumer;
     }
 
@@ -47,6 +49,10 @@ final class ModVersionDetail {
 
     public String loaderVersion() {
         return loaderVersion;
+    }
+
+    public String httpMethod() {
+        return httpMethod;
     }
 
     public Consumer<VersionStatusHolder> consumer() {

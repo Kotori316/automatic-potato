@@ -23,6 +23,13 @@ public interface VersionCheckerEntrypoint {
     }
 
     /**
+     * @return the HTTP method to use to get version json. Default is {@code GET}
+     */
+    default String httpMethod() {
+        return "GET";
+    }
+
+    /**
      * @return whether to enable version check of this mod
      */
     default boolean enabled() {

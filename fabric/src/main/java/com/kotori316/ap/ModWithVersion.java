@@ -36,7 +36,7 @@ final class ModWithVersion {
             headers.put("User-Agent", userAgent);
             headers.put("Accept", "application/json");
 
-            try (HttpReader.HttpResponse response = this.httpReader.read(this.detail.versionJsonUrl(), "GET", Collections.unmodifiableMap(headers))) {
+            try (HttpReader.HttpResponse response = this.httpReader.read(this.detail.versionJsonUrl(), this.detail.httpMethod(), Collections.unmodifiableMap(headers))) {
                 String contentType = response.getContentType();
                 String responseMessage = response.getResponseMessage();
 

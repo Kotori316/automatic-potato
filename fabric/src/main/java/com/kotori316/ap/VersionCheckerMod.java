@@ -37,6 +37,7 @@ public final class VersionCheckerMod implements ModInitializer {
                     e.getEntrypoint().targetMinecraftVersion().orElse(minecraftVersion),
                     minecraftVersion,
                     loaderVersion,
+                    e.getEntrypoint().httpMethod(),
                     e.getEntrypoint()::log
                 ),
                 reader
@@ -57,6 +58,7 @@ public final class VersionCheckerMod implements ModInitializer {
                             minecraftVersion,
                             minecraftVersion,
                             loaderVersion,
+                            "GET",
                             VersionCheckerEntrypoint::logVersionInfo
                         ),
                         reader));
