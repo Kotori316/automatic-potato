@@ -95,7 +95,7 @@ publishMods {
                     ?: "") as String
         projectId = "973884"
         minecraftVersionRange {
-            start = "1.16.5"
+            start = minecraftVersion
             end = "latest"
         }
     }
@@ -104,7 +104,7 @@ publishMods {
         accessToken = (project.findProperty("modrinthToken") ?: System.getenv("MODRINTH_TOKEN") ?: "") as String
         projectId = "fLArsyMM"
         minecraftVersionRange {
-            start = "1.16.5"
+            start =minecraftVersion
             end = "latest"
         }
     }
