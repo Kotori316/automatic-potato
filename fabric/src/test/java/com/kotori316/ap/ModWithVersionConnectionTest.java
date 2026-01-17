@@ -86,21 +86,6 @@ final class ModWithVersionConnectionTest {
     }
 
     @Test
-    @Deprecated
-    void successDeprecated() throws IOException {
-        server.enqueue(
-            new MockResponse()
-                .setResponseCode(200)
-                .addHeader("Content-Type", "application/json")
-                .setBody(new Gson().toJson(response))
-        );
-        server.start();
-        ModWithVersion version = createVersion(server.url("/get-version/1.16.5/fabric/" + VersionCheckerMod.MOD_ID));
-        CheckConnectionStatus status = version.check(5000);
-        assertEquals(CheckConnectionStatus.OK, status);
-    }
-
-    @Test
     void notFound() throws IOException {
         server.enqueue(new MockResponse().setResponseCode(404));
         server.start();

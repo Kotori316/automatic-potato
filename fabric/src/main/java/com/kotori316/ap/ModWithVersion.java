@@ -71,11 +71,6 @@ final class ModWithVersion {
         }
     }
 
-    @Deprecated
-    CheckConnectionStatus check(int timeout) {
-        return check();
-    }
-
     String getUa() {
         return String.format("%s/%s Java/%s Minecraft/%s Fabric/%s", this.detail.modId(), this.detail.modVersion(), System.getProperty("java.vendor.version"), this.detail.actualMinecraftVersion(), this.detail.loaderVersion());
     }
