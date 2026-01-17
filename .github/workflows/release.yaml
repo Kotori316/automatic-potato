@@ -15,4 +15,5 @@ jobs:
       sign_check_command: 'assemble publishToMavenLocal'
       release_command: 'checkReleaseVersion assemble publishToMavenLocal publishMods registerVersion publish'
       enable_signature_check: true
+      java_version: '25'
     secrets: inherit
