@@ -27,6 +27,7 @@ develocity {
 }
 
 includeBuild("build-logic")
+include("publish-all")
 if (!System.getenv("DISABLE_FORGE").toBoolean()) {
     // include("forge")
 }
