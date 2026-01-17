@@ -20,7 +20,7 @@ publishMods {
 
     github {
         repository = "Kotori316/automatic-potato"
-        accessToken = System.getenv("GITHUB_TOKEN") ?: ""
+        accessToken = System.getenv("REPO_TOKEN") ?: ""
         commitish = System.getenv("GITHUB_SHA") ?: "main"
         tagName = "v${project.version}"
     }
