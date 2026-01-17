@@ -1,5 +1,6 @@
 package com.kotori316.ap;
 
+import com.kotori316.ap.api.HttpReader;
 import com.kotori316.ap.api.VersionCheckerEntrypoint;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
@@ -22,19 +23,23 @@ public final class VersionCheckerMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        HttpReader reader = HttpReader.load();
         String loaderVersion = FabricLoader.getInstance().getModContainer("fabricloader").map(ModContainer::getMetadata).map(ModMetadata::getVersion).map(Version::getFriendlyString).orElse("none");
         String minecraftVersion = FabricLoader.getInstance().getModContainer("minecraft").map(ModContainer::getMetadata).map(ModMetadata::getVersion).map(Version::getFriendlyString).orElse("none");
         List<EntrypointContainer<VersionCheckerEntrypoint>> list = FabricLoader.getInstance().getEntrypointContainers(KEY, VersionCheckerEntrypoint.class);
         Stream<ModWithVersion> fromEntryPoint = list.stream()
             .filter(e -> e.getEntrypoint().enabled())
             .map(e -> new ModWithVersion(
-                e.getProvider().getMetadata().getId(),
-                e.getProvider().getMetadata().getVersion(),
-                e.getEntrypoint().versionJsonUrl(),
-                e.getEntrypoint().targetMinecraftVersion().orElse(minecraftVersion),
-                minecraftVersion,
-                e.getEntrypoint()::log,
-                loaderVersion
+                new ModVersionDetail(
+                    e.getProvider().getMetadata().getId(),
+                    e.getProvider().getMetadata().getVersion(),
+                    e.getEntrypoint().versionJsonUrl(),
+                    e.getEntrypoint().targetMinecraftVersion().orElse(minecraftVersion),
+                    minecraftVersion,
+                    loaderVersion,
+                    e.getEntrypoint()::log
+                ),
+                reader
             ));
         Stream<ModWithVersion> fromCustom = FabricLoader.getInstance()
             .getAllMods()
@@ -45,13 +50,16 @@ public final class VersionCheckerMod implements ModInitializer {
                 try {
                     String uri = m.getCustomValue(KEY).getAsString();
                     return Stream.of(new ModWithVersion(
-                        m.getId(),
-                        m.getVersion(),
-                        URI.create(uri),
-                        minecraftVersion,
-                        minecraftVersion,
-                        VersionCheckerEntrypoint::logVersionInfo,
-                        loaderVersion));
+                        new ModVersionDetail(
+                            m.getId(),
+                            m.getVersion(),
+                            URI.create(uri),
+                            minecraftVersion,
+                            minecraftVersion,
+                            loaderVersion,
+                            VersionCheckerEntrypoint::logVersionInfo
+                        ),
+                        reader));
                 } catch (RuntimeException e) {
                     LOGGER.warn("Invalid configuration of {} in {}", KEY, m.getId());
                     return Stream.empty();

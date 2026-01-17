@@ -20,7 +20,6 @@ dependencies {
     testImplementation(platform("org.junit:junit-bom:5.14.2"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
-    testImplementation("com.squareup.okhttp3:mockwebserver:5.3.2")
 }
 
 val modId: String by project

@@ -2,6 +2,7 @@ package com.kotori316.ap;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.kotori316.ap.api.HttpReader;
 import com.kotori316.ap.api.VersionStatus;
 import com.kotori316.ap.api.VersionStatusHolder;
 import net.fabricmc.loader.api.Version;
@@ -26,28 +27,34 @@ class ModWithVersionTest {
     @BeforeEach
     void setup() throws VersionParsingException {
         this.version = new ModWithVersion(
-            VersionCheckerMod.MOD_ID,
-            Version.parse("1.0.0"),
-            URI.create("https://version.kotori316.com/get-version/1.16.5/fabric/" + VersionCheckerMod.MOD_ID),
-            "1.16.5",
-            "1.20.5",
-            s -> {
-            },
-            "1.0"
+            new ModVersionDetail(
+                VersionCheckerMod.MOD_ID,
+                Version.parse("1.0.0"),
+                URI.create("https://version.kotori316.com/get-version/1.16.5/fabric/" + VersionCheckerMod.MOD_ID),
+                "1.16.5",
+                "1.20.5",
+                "1.0",
+                s -> {
+                }
+            ),
+            HttpReader.load()
         );
     }
 
     @Test
     void createInstance() {
         assertDoesNotThrow(() -> new ModWithVersion(
-            VersionCheckerMod.MOD_ID,
-            Version.parse("1.0.0"),
-            URI.create("https://version.kotori316.com/get-version/1.16.5/fabric/" + VersionCheckerMod.MOD_ID),
-            "1.16.5",
-            "1.20.5",
-            s -> {
-            },
-            "1.0"
+            new ModVersionDetail(
+                VersionCheckerMod.MOD_ID,
+                Version.parse("1.0.0"),
+                URI.create("https://version.kotori316.com/get-version/1.16.5/fabric/" + VersionCheckerMod.MOD_ID),
+                "1.16.5",
+                "1.20.5",
+                "1.0",
+                s -> {
+                }
+            ),
+            HttpReader.load()
         ));
     }
 
