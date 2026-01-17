@@ -50,6 +50,8 @@ public interface HttpReader {
 
         int getResponseCode() throws IOException;
 
+        boolean isOk() throws IOException;
+
         String getContentType();
 
         String getResponseMessage() throws IOException;

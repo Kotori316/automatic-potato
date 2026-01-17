@@ -69,6 +69,11 @@ final class FakeHttpReader implements HttpReader {
         }
 
         @Override
+        public boolean isOk() throws IOException {
+            return getResponseCode() == 200;
+        }
+
+        @Override
         public String getContentType() {
             return contentType;
         }

@@ -52,6 +52,11 @@ public final class HttpURLConnectionReader implements HttpReader {
         }
 
         @Override
+        public boolean isOk() throws IOException {
+            return this.connection.getResponseCode() == HttpURLConnection.HTTP_OK;
+        }
+
+        @Override
         public String getContentType() {
             return this.connection.getContentType();
         }
