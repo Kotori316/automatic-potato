@@ -9,7 +9,13 @@ import java.net.URI;
 import java.util.Map;
 
 public final class HttpURLConnectionReader implements HttpReader {
+    private static final int DEFAULT_TIMEOUT_MS = 5000;
     private final int timeout;
+
+    @SuppressWarnings("unused") // called by ServiceLoader
+    public HttpURLConnectionReader() {
+        this(DEFAULT_TIMEOUT_MS);
+    }
 
     public HttpURLConnectionReader(int timeout) {
         this.timeout = timeout;

@@ -2,7 +2,6 @@ package com.kotori316.ap;
 
 import com.kotori316.ap.api.HttpReader;
 import com.kotori316.ap.api.VersionCheckerEntrypoint;
-import com.kotori316.ap.internal.HttpURLConnectionReader;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
@@ -24,7 +23,7 @@ public final class VersionCheckerMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
-        HttpReader reader = new HttpURLConnectionReader(5000);
+        HttpReader reader = HttpReader.load();
         String loaderVersion = FabricLoader.getInstance().getModContainer("fabricloader").map(ModContainer::getMetadata).map(ModMetadata::getVersion).map(Version::getFriendlyString).orElse("none");
         String minecraftVersion = FabricLoader.getInstance().getModContainer("minecraft").map(ModContainer::getMetadata).map(ModMetadata::getVersion).map(Version::getFriendlyString).orElse("none");
         List<EntrypointContainer<VersionCheckerEntrypoint>> list = FabricLoader.getInstance().getEntrypointContainers(KEY, VersionCheckerEntrypoint.class);
