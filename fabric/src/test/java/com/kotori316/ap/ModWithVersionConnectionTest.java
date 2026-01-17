@@ -2,6 +2,7 @@ package com.kotori316.ap;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import com.kotori316.ap.internal.HttpURLConnectionReader;
 import net.fabricmc.loader.api.Version;
 import net.fabricmc.loader.api.VersionParsingException;
 import okhttp3.HttpUrl;
@@ -46,6 +47,10 @@ final class ModWithVersionConnectionTest {
     }
 
     private ModWithVersion createVersion(HttpUrl url) {
+        return createVersion(url, 5000);
+    }
+
+    private ModWithVersion createVersion(HttpUrl url, int timeout) {
         try {
             return new ModWithVersion(
                 VersionCheckerMod.MOD_ID,
@@ -55,7 +60,8 @@ final class ModWithVersionConnectionTest {
                 "1.20.5",
                 s -> {
                 },
-                "1.0"
+                "1.0",
+                new HttpURLConnectionReader(timeout)
             );
         } catch (VersionParsingException e) {
             fail(e);
@@ -74,6 +80,21 @@ final class ModWithVersionConnectionTest {
         server.start();
         ModWithVersion version = createVersion(server.url("/get-version/1.16.5/fabric/" + VersionCheckerMod.MOD_ID));
         CheckConnectionStatus status = version.check();
+        assertEquals(CheckConnectionStatus.OK, status);
+    }
+
+    @Test
+    @Deprecated
+    void successDeprecated() throws IOException {
+        server.enqueue(
+            new MockResponse()
+                .setResponseCode(200)
+                .addHeader("Content-Type", "application/json")
+                .setBody(new Gson().toJson(response))
+        );
+        server.start();
+        ModWithVersion version = createVersion(server.url("/get-version/1.16.5/fabric/" + VersionCheckerMod.MOD_ID));
+        CheckConnectionStatus status = version.check(5000);
         assertEquals(CheckConnectionStatus.OK, status);
     }
 
@@ -120,11 +141,11 @@ final class ModWithVersionConnectionTest {
                 .setResponseCode(200)
                 .addHeader("Content-Type", "application/json")
                 .setBody(new Gson().toJson(response))
-                .setBodyDelay(15, TimeUnit.MILLISECONDS)
+                .setBodyDelay(100, TimeUnit.MILLISECONDS)
         );
         server.start();
-        ModWithVersion version = createVersion(server.url("/get-version/1.16.5/fabric/" + VersionCheckerMod.MOD_ID));
-        CheckConnectionStatus status = version.check(5);
+        ModWithVersion version = createVersion(server.url("/get-version/1.16.5/fabric/" + VersionCheckerMod.MOD_ID), 50);
+        CheckConnectionStatus status = version.check();
         assertEquals(CheckConnectionStatus.ERROR, status);
     }
 
@@ -136,11 +157,11 @@ final class ModWithVersionConnectionTest {
                 .setResponseCode(statusCode)
                 .addHeader("Content-Type", "application/json")
                 .setBody(new Gson().toJson(response))
-                .setBodyDelay(15, TimeUnit.MILLISECONDS)
+                .setBodyDelay(100, TimeUnit.MILLISECONDS)
         );
         server.start();
-        ModWithVersion version = createVersion(server.url("/get-version/1.16.5/fabric/" + VersionCheckerMod.MOD_ID));
-        CheckConnectionStatus status = version.check(5);
+        ModWithVersion version = createVersion(server.url("/get-version/1.16.5/fabric/" + VersionCheckerMod.MOD_ID), 50);
+        CheckConnectionStatus status = version.check();
         assertEquals(CheckConnectionStatus.INVALID_STATUS_CODE, status);
 
     }
@@ -153,11 +174,11 @@ final class ModWithVersionConnectionTest {
                 .setResponseCode(responseCode)
                 .addHeader("Content-Type", "text/plain")
                 .setBody("Header Delay")
-                .setHeadersDelay(50, TimeUnit.MILLISECONDS)
+                .setHeadersDelay(100, TimeUnit.MILLISECONDS)
         );
         server.start();
-        ModWithVersion version = createVersion(server.url("/get-version/1.16.5/fabric/" + VersionCheckerMod.MOD_ID));
-        CheckConnectionStatus status = version.check(5);
+        ModWithVersion version = createVersion(server.url("/get-version/1.16.5/fabric/" + VersionCheckerMod.MOD_ID), 50);
+        CheckConnectionStatus status = version.check();
         assertEquals(CheckConnectionStatus.ERROR, status);
     }
 }

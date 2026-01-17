@@ -4,6 +4,7 @@ import com.google.gson.Gson;
 import com.google.gson.JsonObject;
 import com.kotori316.ap.api.VersionStatus;
 import com.kotori316.ap.api.VersionStatusHolder;
+import com.kotori316.ap.internal.HttpURLConnectionReader;
 import net.fabricmc.loader.api.Version;
 import net.fabricmc.loader.api.VersionParsingException;
 import org.junit.jupiter.api.BeforeEach;
@@ -33,7 +34,8 @@ class ModWithVersionTest {
             "1.20.5",
             s -> {
             },
-            "1.0"
+            "1.0",
+            new HttpURLConnectionReader(5000)
         );
     }
 
@@ -47,7 +49,8 @@ class ModWithVersionTest {
             "1.20.5",
             s -> {
             },
-            "1.0"
+            "1.0",
+            new HttpURLConnectionReader(5000)
         ));
     }
 

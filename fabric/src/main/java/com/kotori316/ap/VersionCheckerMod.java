@@ -1,6 +1,8 @@
 package com.kotori316.ap;
 
+import com.kotori316.ap.api.HttpReader;
 import com.kotori316.ap.api.VersionCheckerEntrypoint;
+import com.kotori316.ap.internal.HttpURLConnectionReader;
 import net.fabricmc.api.ModInitializer;
 import net.fabricmc.loader.api.FabricLoader;
 import net.fabricmc.loader.api.ModContainer;
@@ -22,6 +24,7 @@ public final class VersionCheckerMod implements ModInitializer {
 
     @Override
     public void onInitialize() {
+        HttpReader reader = new HttpURLConnectionReader(5000);
         String loaderVersion = FabricLoader.getInstance().getModContainer("fabricloader").map(ModContainer::getMetadata).map(ModMetadata::getVersion).map(Version::getFriendlyString).orElse("none");
         String minecraftVersion = FabricLoader.getInstance().getModContainer("minecraft").map(ModContainer::getMetadata).map(ModMetadata::getVersion).map(Version::getFriendlyString).orElse("none");
         List<EntrypointContainer<VersionCheckerEntrypoint>> list = FabricLoader.getInstance().getEntrypointContainers(KEY, VersionCheckerEntrypoint.class);
@@ -34,7 +37,8 @@ public final class VersionCheckerMod implements ModInitializer {
                 e.getEntrypoint().targetMinecraftVersion().orElse(minecraftVersion),
                 minecraftVersion,
                 e.getEntrypoint()::log,
-                loaderVersion
+                loaderVersion,
+                reader
             ));
         Stream<ModWithVersion> fromCustom = FabricLoader.getInstance()
             .getAllMods()
@@ -51,7 +55,8 @@ public final class VersionCheckerMod implements ModInitializer {
                         minecraftVersion,
                         minecraftVersion,
                         VersionCheckerEntrypoint::logVersionInfo,
-                        loaderVersion));
+                        loaderVersion,
+                        reader));
                 } catch (RuntimeException e) {
                     LOGGER.warn("Invalid configuration of {} in {}", KEY, m.getId());
                     return Stream.empty();
