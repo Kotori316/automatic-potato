@@ -16,6 +16,7 @@ val releaseDebug = (System.getenv("RELEASE_DEBUG") ?: "true").toBoolean()
 val hasGpgSignature = project.hasProperty("signing.keyId") &&
         project.hasProperty("signing.password") &&
         project.hasProperty("signing.secretKeyRingFile")
+val catalog: VersionCatalog = project.versionCatalogs.named("libs")
 
 val remapJarTask: org.gradle.jvm.tasks.Jar by tasks.named("remapJar", org.gradle.jvm.tasks.Jar::class)
 
@@ -62,7 +63,7 @@ tasks {
         functionEndpoint = CallVersionFunctionTask.readVersionFunctionEndpoint(project)
         gameVersion = minecraftVersion
         platform = project.name
-        platformVersion = "0.15.+"
+        platformVersion = catalog.findVersion("fabric_loader").map { it.requiredVersion }.get()
         modName = modId
         changelog = "Version ${project.version}"
         homepage = "https://modrinth.com/project/automatic-potato"
