@@ -27,7 +27,6 @@ develocity {
 }
 
 includeBuild("build-logic")
-rootProject.name = "automatic-potato"
 if (!System.getenv("DISABLE_FORGE").toBoolean()) {
     // include("forge")
 }
