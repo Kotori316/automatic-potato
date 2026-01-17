@@ -27,14 +27,16 @@ class ModWithVersionTest {
     @BeforeEach
     void setup() throws VersionParsingException {
         this.version = new ModWithVersion(
-            VersionCheckerMod.MOD_ID,
-            Version.parse("1.0.0"),
-            URI.create("https://version.kotori316.com/get-version/1.16.5/fabric/" + VersionCheckerMod.MOD_ID),
-            "1.16.5",
-            "1.20.5",
-            s -> {
-            },
-            "1.0",
+            new ModVersionDetail(
+                VersionCheckerMod.MOD_ID,
+                Version.parse("1.0.0"),
+                URI.create("https://version.kotori316.com/get-version/1.16.5/fabric/" + VersionCheckerMod.MOD_ID),
+                "1.16.5",
+                "1.20.5",
+                "1.0",
+                s -> {
+                }
+            ),
             new HttpURLConnectionReader(5000)
         );
     }
@@ -42,14 +44,16 @@ class ModWithVersionTest {
     @Test
     void createInstance() {
         assertDoesNotThrow(() -> new ModWithVersion(
-            VersionCheckerMod.MOD_ID,
-            Version.parse("1.0.0"),
-            URI.create("https://version.kotori316.com/get-version/1.16.5/fabric/" + VersionCheckerMod.MOD_ID),
-            "1.16.5",
-            "1.20.5",
-            s -> {
-            },
-            "1.0",
+            new ModVersionDetail(
+                VersionCheckerMod.MOD_ID,
+                Version.parse("1.0.0"),
+                URI.create("https://version.kotori316.com/get-version/1.16.5/fabric/" + VersionCheckerMod.MOD_ID),
+                "1.16.5",
+                "1.20.5",
+                "1.0",
+                s -> {
+                }
+            ),
             new HttpURLConnectionReader(5000)
         ));
     }

@@ -53,14 +53,16 @@ final class ModWithVersionConnectionTest {
     private ModWithVersion createVersion(HttpUrl url, int timeout) {
         try {
             return new ModWithVersion(
-                VersionCheckerMod.MOD_ID,
-                Version.parse("1.0.0"),
-                url.uri(),
-                "1.16.5",
-                "1.20.5",
-                s -> {
-                },
-                "1.0",
+                new ModVersionDetail(
+                    VersionCheckerMod.MOD_ID,
+                    Version.parse("1.0.0"),
+                    url.uri(),
+                    "1.16.5",
+                    "1.20.5",
+                    "1.0",
+                    s -> {
+                    }
+                ),
                 new HttpURLConnectionReader(timeout)
             );
         } catch (VersionParsingException e) {

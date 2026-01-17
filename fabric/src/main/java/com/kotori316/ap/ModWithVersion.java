@@ -15,7 +15,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
@@ -23,35 +22,23 @@ import java.util.Optional;
 import java.util.function.Consumer;
 
 final class ModWithVersion {
-    private final String modId;
-    private final Version modVersion;
-    private final URI versionJsonUrl;
-    private final String targetMinecraftVersion;
-    private final String actualMinecraftVersion;
-    private final String loaderVersion;
-    private final Consumer<VersionStatusHolder> consumer;
+    private final ModVersionDetail detail;
     private final HttpReader httpReader;
 
-    ModWithVersion(String modId, Version modVersion, URI versionJsonUrl, String targetMinecraftVersion, String actualMinecraftVersion, Consumer<VersionStatusHolder> consumer, String loaderVersion, HttpReader httpReader) {
-        this.modId = modId;
-        this.modVersion = modVersion;
-        this.versionJsonUrl = versionJsonUrl;
-        this.targetMinecraftVersion = targetMinecraftVersion;
-        this.actualMinecraftVersion = actualMinecraftVersion;
-        this.loaderVersion = loaderVersion;
-        this.consumer = consumer;
+    ModWithVersion(ModVersionDetail detail, HttpReader httpReader) {
+        this.detail = detail;
         this.httpReader = httpReader;
     }
 
     CheckConnectionStatus check() {
         try {
             String userAgent = this.getUa();
-            VersionCheckerMod.LOGGER.debug("Access to {} for {}({}) with UA '{}'", this.versionJsonUrl, this.modId, this.modVersion, userAgent);
+            VersionCheckerMod.LOGGER.debug("Access to {} for {}({}) with UA '{}'", this.detail.versionJsonUrl(), this.detail.modId(), this.detail.modVersion(), userAgent);
             Map<String, String> headers = new HashMap<>();
             headers.put("User-Agent", userAgent);
             headers.put("Accept", "application/json");
 
-            try (HttpReader.HttpResponse response = this.httpReader.read(this.versionJsonUrl, "GET", Collections.unmodifiableMap(headers))) {
+            try (HttpReader.HttpResponse response = this.httpReader.read(this.detail.versionJsonUrl(), "GET", Collections.unmodifiableMap(headers))) {
                 int responseCode = response.getResponseCode();
                 String contentType = response.getContentType();
                 String responseMessage = response.getResponseMessage();
@@ -64,22 +51,22 @@ final class ModWithVersion {
                         ) {
                             Gson gson = new Gson();
                             JsonObject jsonObject = gson.fromJson(jsonReader, JsonObject.class);
-                            VersionCheckerMod.LOGGER.debug("Get json for {}/{}: {}", this.modId, this.modVersion, jsonObject);
-                            compareVersion(jsonObject, targetMinecraftVersion, modId, modVersion, consumer);
+                            VersionCheckerMod.LOGGER.debug("Get json for {}/{}: {}", this.detail.modId(), this.detail.modVersion(), jsonObject);
+                            compareVersion(jsonObject, this.detail.targetMinecraftVersion(), this.detail.modId(), this.detail.modVersion(), this.detail.consumer());
                             return CheckConnectionStatus.OK;
                         }
                     } else {
-                        VersionCheckerMod.LOGGER.warn("Expected application/json, but got {} for {}/{}", contentType, modId, modVersion);
+                        VersionCheckerMod.LOGGER.warn("Expected application/json, but got {} for {}/{}", contentType, this.detail.modId(), this.detail.modVersion());
                         return CheckConnectionStatus.INVALID_CONTENT_TYPE;
                     }
                 } else {
-                    VersionCheckerMod.LOGGER.warn("Failed to get version JSON for {}/{}. Message: {}, Status: {}", modId, modVersion, responseMessage, responseCode);
+                    VersionCheckerMod.LOGGER.warn("Failed to get version JSON for {}/{}. Message: {}, Status: {}", this.detail.modId(), this.detail.modVersion(), responseMessage, responseCode);
                     return CheckConnectionStatus.INVALID_STATUS_CODE;
                 }
             }
         } catch (IOException | JsonParseException e) {
-            VersionCheckerMod.LOGGER.warn("Failed to get version JSON for {}/{}. Message: {}", modId, modVersion, e.getMessage());
-            VersionCheckerMod.LOGGER.debug("Stacktrace of {}({})", this.modId, this.modVersion, e);
+            VersionCheckerMod.LOGGER.warn("Failed to get version JSON for {}/{}. Message: {}", this.detail.modId(), this.detail.modVersion(), e.getMessage());
+            VersionCheckerMod.LOGGER.debug("Stacktrace of {}({})", this.detail.modId(), this.detail.modVersion(), e);
             return CheckConnectionStatus.ERROR;
         }
     }
@@ -90,7 +77,7 @@ final class ModWithVersion {
     }
 
     String getUa() {
-        return String.format("%s/%s Java/%s Minecraft/%s Fabric/%s", modId, modVersion, System.getProperty("java.vendor.version"), actualMinecraftVersion, loaderVersion);
+        return String.format("%s/%s Java/%s Minecraft/%s Fabric/%s", this.detail.modId(), this.detail.modVersion(), System.getProperty("java.vendor.version"), this.detail.actualMinecraftVersion(), this.detail.loaderVersion());
     }
 
     /**

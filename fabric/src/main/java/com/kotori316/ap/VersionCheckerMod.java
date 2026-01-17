@@ -31,13 +31,15 @@ public final class VersionCheckerMod implements ModInitializer {
         Stream<ModWithVersion> fromEntryPoint = list.stream()
             .filter(e -> e.getEntrypoint().enabled())
             .map(e -> new ModWithVersion(
-                e.getProvider().getMetadata().getId(),
-                e.getProvider().getMetadata().getVersion(),
-                e.getEntrypoint().versionJsonUrl(),
-                e.getEntrypoint().targetMinecraftVersion().orElse(minecraftVersion),
-                minecraftVersion,
-                e.getEntrypoint()::log,
-                loaderVersion,
+                new ModVersionDetail(
+                    e.getProvider().getMetadata().getId(),
+                    e.getProvider().getMetadata().getVersion(),
+                    e.getEntrypoint().versionJsonUrl(),
+                    e.getEntrypoint().targetMinecraftVersion().orElse(minecraftVersion),
+                    minecraftVersion,
+                    loaderVersion,
+                    e.getEntrypoint()::log
+                ),
                 reader
             ));
         Stream<ModWithVersion> fromCustom = FabricLoader.getInstance()
@@ -49,13 +51,15 @@ public final class VersionCheckerMod implements ModInitializer {
                 try {
                     String uri = m.getCustomValue(KEY).getAsString();
                     return Stream.of(new ModWithVersion(
-                        m.getId(),
-                        m.getVersion(),
-                        URI.create(uri),
-                        minecraftVersion,
-                        minecraftVersion,
-                        VersionCheckerEntrypoint::logVersionInfo,
-                        loaderVersion,
+                        new ModVersionDetail(
+                            m.getId(),
+                            m.getVersion(),
+                            URI.create(uri),
+                            minecraftVersion,
+                            minecraftVersion,
+                            loaderVersion,
+                            VersionCheckerEntrypoint::logVersionInfo
+                        ),
                         reader));
                 } catch (RuntimeException e) {
                     LOGGER.warn("Invalid configuration of {} in {}", KEY, m.getId());
