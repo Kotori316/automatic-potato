@@ -14,10 +14,10 @@ See Forge document for detail.
 
 [Forge Update Checker]: https://docs.minecraftforge.net/en/1.20.x/misc/updatechecker/
 
-This mod supports homepage, promos.<mcversion>-latest and promos.<mcversion>-recommended(if latest is not present)
+This mod supports homepage, promos.<mcversion>-latest and promos.<mcversion>-recommended(if the latest is not present)
 fields.
-Other entries including the changelog are not loaded currently.
-The mod version and latest version will be compared, then the result will be logged in console.
+Other entries, including the changelog, are not loaded currently.
+The mod version and the latest version will be compared, then the result will be logged in the Minecraft console.
 
 ## Simple implementation
 
@@ -36,9 +36,9 @@ https://github.com/Kotori316/automatic-potato/blob/main/example/fabric.mod.json
 
 ## Dynamic implementation
 
-You can change the URL and the action after comparing(default is just logging).
+You can change the URL and the action after comparing (default is just logging).
 
-Include this mod as dependency like this.
+Include this mod as a dependency like this.
 
 ```groovy
 repositories {
