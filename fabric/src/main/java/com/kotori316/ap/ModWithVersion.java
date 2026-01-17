@@ -15,10 +15,8 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Optional;
+import java.nio.charset.StandardCharsets;
+import java.util.*;
 import java.util.function.Consumer;
 
 final class ModWithVersion {
@@ -44,9 +42,9 @@ final class ModWithVersion {
                 String responseMessage = response.getResponseMessage();
 
                 if (responseCode == 200) { // HttpURLConnection.HTTP_OK
-                    if (contentType != null && contentType.startsWith("application/json")) {
+                    if (contentType != null && contentType.toLowerCase(Locale.ROOT).startsWith("application/json")) {
                         try (InputStream inputStream = response.getInputStream();
-                             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream));
+                             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
                              JsonReader jsonReader = new JsonReader(reader)
                         ) {
                             Gson gson = new Gson();

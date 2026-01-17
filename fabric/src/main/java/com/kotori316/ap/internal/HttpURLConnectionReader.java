@@ -29,6 +29,7 @@ public final class HttpURLConnectionReader implements HttpReader {
         connection.setConnectTimeout(this.timeout);
         connection.setReadTimeout(this.timeout);
         headers.forEach(connection::setRequestProperty);
+        connection.connect();
 
         return new HttpURLResponse(connection);
     }
