@@ -16,7 +16,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.util.*;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Optional;
 import java.util.function.Consumer;
 
 final class ModWithVersion {
@@ -32,11 +34,9 @@ final class ModWithVersion {
         try {
             String userAgent = this.getUa();
             VersionCheckerMod.LOGGER.debug("Access to {} for {}({}) with UA '{}'", this.detail.versionJsonUrl(), this.detail.modId(), this.detail.modVersion(), userAgent);
-            Map<String, String> headers = new HashMap<>();
-            headers.put("User-Agent", userAgent);
-            headers.put("Accept", "application/json");
+            Map<String, String> headers = Map.of("User-Agent", userAgent, "Accept", "application/json");
 
-            try (HttpReader.HttpResponse response = this.httpReader.read(this.detail.versionJsonUrl(), this.detail.httpMethod(), Collections.unmodifiableMap(headers))) {
+            try (HttpReader.HttpResponse response = this.httpReader.read(this.detail.versionJsonUrl(), this.detail.httpMethod(), headers)) {
                 String contentType = response.getContentType();
 
                 if (response.isOk()) {
@@ -89,14 +89,11 @@ final class ModWithVersion {
             return;
         }
         int compare = modVersion.compareTo(latestVersion);
-        VersionStatus status;
-        if (compare > 0) {
-            status = VersionStatus.AHEAD;
-        } else if (compare == 0) {
-            status = VersionStatus.LATEST;
-        } else {
-            status = VersionStatus.OUTDATED;
-        }
+        VersionStatus status = switch (Integer.signum(compare)) {
+            case 1 -> VersionStatus.AHEAD;
+            case 0 -> VersionStatus.LATEST;
+            default -> VersionStatus.OUTDATED;
+        };
         consumer.accept(new VersionStatusHolder(status, modId, homepage.orElse(null), latestVersion, modVersion));
     }
 

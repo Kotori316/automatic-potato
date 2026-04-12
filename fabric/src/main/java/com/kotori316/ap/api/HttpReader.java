@@ -3,10 +3,11 @@ package com.kotori316.ap.api;
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
-import java.util.Iterator;
+import java.util.Comparator;
 import java.util.Map;
 import java.util.NoSuchElementException;
 import java.util.ServiceLoader;
+import java.util.stream.StreamSupport;
 
 public interface HttpReader {
     /**
@@ -23,19 +24,9 @@ public interface HttpReader {
      * @throws NoSuchElementException if no implementation is found
      */
     static HttpReader load() {
-        ServiceLoader<HttpReader> loader = ServiceLoader.load(HttpReader.class);
-        Iterator<HttpReader> iterator = loader.iterator();
-        if (!iterator.hasNext()) {
-            throw new NoSuchElementException("No HttpReader implementation found");
-        }
-        HttpReader best = iterator.next();
-        while (iterator.hasNext()) {
-            HttpReader current = iterator.next();
-            if (current.priority() > best.priority()) {
-                best = current;
-            }
-        }
-        return best;
+        return StreamSupport.stream(ServiceLoader.load(HttpReader.class).spliterator(), false)
+            .max(Comparator.comparingInt(HttpReader::priority))
+            .orElseThrow(() -> new NoSuchElementException("No HttpReader implementation found"));
     }
 
     /**
