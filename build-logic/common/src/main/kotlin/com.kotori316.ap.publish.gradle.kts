@@ -39,11 +39,6 @@ tasks {
     withType(Sign::class) {
         onlyIf { hasGpgSignature }
     }
-    withType(AbstractPublishToMaven::class) {
-        if (hasGpgSignature) {
-            dependsOn("signRemapJar")
-        }
-    }
 
     register("registerVersion", CallVersionFunctionTask::class) {
         functionEndpoint = CallVersionFunctionTask.readVersionFunctionEndpoint(project)
