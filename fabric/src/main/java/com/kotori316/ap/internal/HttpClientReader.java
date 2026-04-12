@@ -47,7 +47,7 @@ public final class HttpClientReader implements HttpReader {
 
     @Override
     public int priority() {
-        return 10;
+        return 10; // Higher than HttpURLConnectionReader
     }
 
     private record HttpClientResponse(java.net.http.HttpResponse<InputStream> response) implements HttpResponse {

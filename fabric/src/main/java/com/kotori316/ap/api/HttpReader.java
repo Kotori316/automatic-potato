@@ -30,7 +30,8 @@ public interface HttpReader {
     }
 
     /**
-     * The priority of this reader. Used to determine the implementation with {@link java.util.ServiceLoader}
+     * The priority of this reader. A higher value has higher priority and is preferred by {@link #load()}.
+     * Used to determine the implementation with {@link java.util.ServiceLoader}
      */
     default int priority() {
         return 0;
