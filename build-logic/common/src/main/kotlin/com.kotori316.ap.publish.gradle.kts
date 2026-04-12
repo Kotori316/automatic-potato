@@ -10,7 +10,6 @@ plugins {
 }
 
 val modId: String by project
-// Fixed. Use 1.16.5
 val minecraftVersion: String by project
 val releaseDebug = (System.getenv("RELEASE_DEBUG") ?: "true").toBoolean()
 val hasGpgSignature = project.hasProperty("signing.keyId") &&
@@ -23,25 +22,16 @@ signing {
 }
 
 tasks {
-    val jksSignJar = register("jksSignJar") {
+    val jksSignJar = register("jksSignJar", JarSignTask::class) {
         onlyIf {
             project.hasProperty("jarSign.keyAlias") &&
                     project.hasProperty("jarSign.keyLocation") &&
                     project.hasProperty("jarSign.storePass")
         }
-        doLast {
-            ant.withGroovyBuilder {
-                "signjar"(
-                    "jar" to tasks.jar.flatMap { it.archiveFile }.get(),
-                    "alias" to project.findProperty("jarSign.keyAlias"),
-                    "keystore" to project.findProperty("jarSign.keyLocation"),
-                    "storepass" to project.findProperty("jarSign.storePass"),
-                    "sigalg" to "Ed25519",
-                    "digestalg" to "SHA-256",
-                    "tsaurl" to "http://timestamp.digicert.com",
-                )
-            }
-        }
+        jarFile = tasks.jar.flatMap { it.archiveFile }
+        keyAlias = project.findProperty("jarSign.keyAlias") as? String ?: ""
+        keyStore = project.findProperty("jarSign.keyLocation") as? String ?: ""
+        storePass = project.findProperty("jarSign.storePass") as? String ?: ""
     }
     tasks.jar {
         finalizedBy(jksSignJar)
