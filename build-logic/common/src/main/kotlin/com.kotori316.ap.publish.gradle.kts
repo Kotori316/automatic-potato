@@ -47,7 +47,7 @@ tasks {
         platformVersion = catalog.findVersion("fabric_loader").map { it.requiredVersion }.get()
         modName = modId
         changelog = "Version ${project.version}"
-        homepage = "https://modrinth.com/project/automatic-potato"
+        homepage = "https://modrinth.com/mod/automatic-potato"
         isDryRun = releaseDebug
     }
     register("checkReleaseVersion", CallVersionCheckFunctionTask::class) {
