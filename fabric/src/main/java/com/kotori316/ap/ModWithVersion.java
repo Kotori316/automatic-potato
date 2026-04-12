@@ -38,7 +38,6 @@ final class ModWithVersion {
 
             try (HttpReader.HttpResponse response = this.httpReader.read(this.detail.versionJsonUrl(), this.detail.httpMethod(), Collections.unmodifiableMap(headers))) {
                 String contentType = response.getContentType();
-                String responseMessage = response.getResponseMessage();
 
                 if (response.isOk()) {
                     if (contentType != null && contentType.toLowerCase(Locale.ROOT).startsWith("application/json")) {
@@ -57,7 +56,7 @@ final class ModWithVersion {
                         return CheckConnectionStatus.INVALID_CONTENT_TYPE;
                     }
                 } else {
-                    VersionCheckerMod.LOGGER.warn("Failed to get version JSON for {}/{}. Message: {}, Status: {}", this.detail.modId(), this.detail.modVersion(), responseMessage, response.getResponseCode());
+                    VersionCheckerMod.LOGGER.warn("Failed to get version JSON for {}/{}. Status: {}", this.detail.modId(), this.detail.modVersion(), response.getResponseCode());
                     return CheckConnectionStatus.INVALID_STATUS_CODE;
                 }
             }

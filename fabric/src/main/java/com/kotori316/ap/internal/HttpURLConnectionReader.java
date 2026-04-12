@@ -62,11 +62,6 @@ public final class HttpURLConnectionReader implements HttpReader {
         }
 
         @Override
-        public String getResponseMessage() throws IOException {
-            return this.connection.getResponseMessage();
-        }
-
-        @Override
         public void close() {
             this.connection.disconnect();
         }

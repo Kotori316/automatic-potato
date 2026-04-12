@@ -54,8 +54,6 @@ public interface HttpReader {
 
         String getContentType();
 
-        String getResponseMessage() throws IOException;
-
         @Override
         void close() throws IOException;
     }
