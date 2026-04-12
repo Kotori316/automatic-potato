@@ -18,7 +18,7 @@ final class FakeHttpReader implements HttpReader {
     }
 
     FakeHttpReader(Function<URI, HttpResponse> responseGenerator) {
-        this.responseGenerator = (uri, method) -> responseGenerator.apply(uri);
+        this.responseGenerator = (uri, _) -> responseGenerator.apply(uri);
     }
 
     @Override
@@ -37,19 +37,17 @@ final class FakeHttpReader implements HttpReader {
         private final int responseCode;
         private final String contentType;
         private final byte[] body;
-        private final String message;
         private final boolean errorInHeader;
         private final boolean errorInBody;
 
-        FakeHttpResponse(int responseCode, String contentType, String body, String message) {
-            this(responseCode, contentType, body, message, false, false);
+        FakeHttpResponse(int responseCode, String contentType, String body) {
+            this(responseCode, contentType, body, false, false);
         }
 
-        FakeHttpResponse(int responseCode, String contentType, String body, String message, boolean errorInHeader, boolean errorInBody) {
+        FakeHttpResponse(int responseCode, String contentType, String body, boolean errorInHeader, boolean errorInBody) {
             this.responseCode = responseCode;
             this.contentType = contentType;
             this.body = body.getBytes();
-            this.message = message;
             this.errorInHeader = errorInHeader;
             this.errorInBody = errorInBody;
         }
@@ -81,14 +79,6 @@ final class FakeHttpReader implements HttpReader {
         @Override
         public String getContentType() {
             return contentType;
-        }
-
-        @Override
-        public String getResponseMessage() throws IOException {
-            if (errorInHeader) {
-                throw new IOException("Connection Timeout in Header");
-            }
-            return message;
         }
 
         @Override

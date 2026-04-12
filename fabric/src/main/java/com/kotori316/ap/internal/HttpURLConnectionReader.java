@@ -34,13 +34,7 @@ public final class HttpURLConnectionReader implements HttpReader {
         return new HttpURLResponse(connection);
     }
 
-    private static final class HttpURLResponse implements HttpResponse {
-        private final HttpURLConnection connection;
-
-        private HttpURLResponse(HttpURLConnection connection) {
-            this.connection = connection;
-        }
-
+    private record HttpURLResponse(HttpURLConnection connection) implements HttpResponse {
         @Override
         public InputStream getInputStream() throws IOException {
             return this.connection.getInputStream();
@@ -59,11 +53,6 @@ public final class HttpURLConnectionReader implements HttpReader {
         @Override
         public String getContentType() {
             return this.connection.getContentType();
-        }
-
-        @Override
-        public String getResponseMessage() throws IOException {
-            return this.connection.getResponseMessage();
         }
 
         @Override

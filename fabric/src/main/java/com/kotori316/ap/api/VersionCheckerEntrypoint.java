@@ -50,16 +50,13 @@ public interface VersionCheckerEntrypoint {
      */
     static void logVersionInfo(VersionStatusHolder holder) {
         switch (holder.versionStatus()) {
-            case LATEST:
+            case LATEST ->
                 VersionCheckerMod.LOGGER.info("Using the latest version, '{}' for {}", holder.currentVersion(), holder.modId());
-                break;
-            case AHEAD:
+            case AHEAD ->
                 VersionCheckerMod.LOGGER.info("Using ahead version '{}' for {}", holder.currentVersion(), holder.modId());
-                break;
-            case OUTDATED:
+            case OUTDATED ->
                 VersionCheckerMod.LOGGER.info("Using outdated version for {}. Latest: '{}', Current: '{}', Homepage: {}",
                     holder.modId(), holder.latestVersion().getFriendlyString(), holder.currentVersion(), holder.homepage());
-                break;
         }
     }
 }

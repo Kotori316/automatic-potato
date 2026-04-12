@@ -48,7 +48,7 @@ final class ModWithVersionConnectionTest {
                     "1.20.5",
                     "1.0",
                     "GET",
-                    s -> {
+                    _ -> {
                     }
                 ),
                 new FakeHttpReader(generator)
@@ -63,7 +63,7 @@ final class ModWithVersionConnectionTest {
     void success() {
         ModWithVersion version = createVersion(
             URI.create("https://example.com/get-version/1.16.5/fabric/" + VersionCheckerMod.MOD_ID),
-            uri -> new FakeHttpReader.FakeHttpResponse(200, "application/json", new Gson().toJson(response), "OK")
+            _ -> new FakeHttpReader.FakeHttpResponse(200, "application/json", new Gson().toJson(response))
         );
         CheckConnectionStatus status = version.check();
         assertEquals(CheckConnectionStatus.OK, status);
@@ -73,7 +73,7 @@ final class ModWithVersionConnectionTest {
     void notFound() {
         ModWithVersion version = createVersion(
             URI.create("https://example.com/get-version/1.16.5/fabric/" + VersionCheckerMod.MOD_ID),
-            uri -> new FakeHttpReader.FakeHttpResponse(404, "text/plain", "Not Found", "Not Found")
+            _ -> new FakeHttpReader.FakeHttpResponse(404, "text/plain", "Not Found")
         );
         CheckConnectionStatus status = version.check();
         assertEquals(CheckConnectionStatus.INVALID_STATUS_CODE, status);
@@ -83,7 +83,7 @@ final class ModWithVersionConnectionTest {
     void internalServerError() {
         ModWithVersion version = createVersion(
             URI.create("https://example.com/get-version/1.16.5/fabric/" + VersionCheckerMod.MOD_ID),
-            uri -> new FakeHttpReader.FakeHttpResponse(500, "text/html", "<html>Error</html>", "Internal Server Error")
+            _ -> new FakeHttpReader.FakeHttpResponse(500, "text/html", "<html>Error</html>")
         );
         CheckConnectionStatus status = version.check();
         assertEquals(CheckConnectionStatus.INVALID_STATUS_CODE, status);
@@ -93,7 +93,7 @@ final class ModWithVersionConnectionTest {
     void returnsHtml() {
         ModWithVersion version = createVersion(
             URI.create("https://example.com/get-version/1.16.5/fabric/" + VersionCheckerMod.MOD_ID),
-            uri -> new FakeHttpReader.FakeHttpResponse(200, "text/html", "<html></html>", "OK")
+            _ -> new FakeHttpReader.FakeHttpResponse(200, "text/html", "<html></html>")
         );
         CheckConnectionStatus status = version.check();
         assertEquals(CheckConnectionStatus.INVALID_CONTENT_TYPE, status);
@@ -103,7 +103,7 @@ final class ModWithVersionConnectionTest {
     void returnsText() {
         ModWithVersion version = createVersion(
             URI.create("https://example.com/get-version/1.16.5/fabric/" + VersionCheckerMod.MOD_ID),
-            uri -> new FakeHttpReader.FakeHttpResponse(200, "text/plain", "OK", "OK")
+            _ -> new FakeHttpReader.FakeHttpResponse(200, "text/plain", "OK")
         );
         CheckConnectionStatus status = version.check();
         assertEquals(CheckConnectionStatus.INVALID_CONTENT_TYPE, status);
@@ -113,7 +113,7 @@ final class ModWithVersionConnectionTest {
     void connectionErrorBodyDelay() {
         ModWithVersion version = createVersion(
             URI.create("https://example.com/get-version/1.16.5/fabric/" + VersionCheckerMod.MOD_ID),
-            uri -> new FakeHttpReader.FakeHttpResponse(200, "application/json", new Gson().toJson(response), "OK", false, true)
+            _ -> new FakeHttpReader.FakeHttpResponse(200, "application/json", new Gson().toJson(response), false, true)
         );
         CheckConnectionStatus status = version.check();
         assertEquals(CheckConnectionStatus.ERROR, status);
@@ -124,7 +124,7 @@ final class ModWithVersionConnectionTest {
     void connectionErrorBodyDelay2(int statusCode) {
         ModWithVersion version = createVersion(
             URI.create("https://example.com/get-version/1.16.5/fabric/" + VersionCheckerMod.MOD_ID),
-            uri -> new FakeHttpReader.FakeHttpResponse(statusCode, "application/json", new Gson().toJson(response), "Error")
+            _ -> new FakeHttpReader.FakeHttpResponse(statusCode, "application/json", new Gson().toJson(response))
         );
         CheckConnectionStatus status = version.check();
         assertEquals(CheckConnectionStatus.INVALID_STATUS_CODE, status);
@@ -135,7 +135,7 @@ final class ModWithVersionConnectionTest {
     void connectionErrorHeaderDelay(int responseCode) {
         ModWithVersion version = createVersion(
             URI.create("https://example.com/get-version/1.16.5/fabric/" + VersionCheckerMod.MOD_ID),
-            uri -> new FakeHttpReader.FakeHttpResponse(responseCode, "application/json", new Gson().toJson(response), "OK", true, false)
+            _ -> new FakeHttpReader.FakeHttpResponse(responseCode, "application/json", new Gson().toJson(response), true, false)
         );
         CheckConnectionStatus status = version.check();
         assertEquals(CheckConnectionStatus.ERROR, status);
@@ -145,7 +145,7 @@ final class ModWithVersionConnectionTest {
     void connectionErrorReadDelay() {
         ModWithVersion version = createVersion(
             URI.create("https://example.com/get-version/1.16.5/fabric/" + VersionCheckerMod.MOD_ID),
-            uri -> {
+            _ -> {
                 throw new RuntimeException(new IOException("Connection Timeout"));
             }
         );
@@ -165,12 +165,12 @@ final class ModWithVersionConnectionTest {
                 "1.20.5",
                 "1.0",
                 "POST",
-                s -> {
+                _ -> {
                 }
             ),
-            new FakeHttpReader((uri, method) -> {
+            new FakeHttpReader((_, method) -> {
                 methodRef.set(method);
-                return new FakeHttpReader.FakeHttpResponse(200, "application/json", new Gson().toJson(response), "OK");
+                return new FakeHttpReader.FakeHttpResponse(200, "application/json", new Gson().toJson(response));
             })
         );
         version.check();
