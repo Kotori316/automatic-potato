@@ -1,6 +1,8 @@
 package com.kotori316.ap;
 
 import com.kotori316.ap.api.HttpReader;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
@@ -22,7 +24,8 @@ final class FakeHttpReader implements HttpReader {
     }
 
     @Override
-    public HttpResponse read(URI uri, String method, Map<String, String> headers) throws IOException {
+    @NotNull
+    public HttpResponse read(@NotNull URI uri, @NotNull String method, @NotNull Map<String, String> headers) throws IOException {
         try {
             return responseGenerator.apply(uri, method);
         } catch (RuntimeException e) {
@@ -53,6 +56,7 @@ final class FakeHttpReader implements HttpReader {
         }
 
         @Override
+        @NotNull
         public InputStream getInputStream() throws IOException {
             if (errorInBody) {
                 throw new IOException("Connection Timeout in Body");
@@ -77,6 +81,7 @@ final class FakeHttpReader implements HttpReader {
         }
 
         @Override
+        @Nullable
         public String getContentType() {
             return contentType;
         }

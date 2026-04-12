@@ -1,6 +1,8 @@
 package com.kotori316.ap.internal;
 
 import com.kotori316.ap.api.HttpReader;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -24,7 +26,8 @@ public final class HttpClientReader implements HttpReader {
     }
 
     @Override
-    public HttpResponse read(URI uri, String method, Map<String, String> headers) throws IOException {
+    @NotNull
+    public HttpResponse read(@NotNull URI uri, @NotNull String method, @NotNull Map<String, String> headers) throws IOException {
         HttpRequest.Builder requestBuilder = HttpRequest.newBuilder()
             .uri(uri)
             .timeout(this.timeout)
@@ -52,6 +55,7 @@ public final class HttpClientReader implements HttpReader {
 
     private record HttpClientResponse(java.net.http.HttpResponse<InputStream> response) implements HttpResponse {
         @Override
+        @NotNull
         public InputStream getInputStream() {
             return this.response.body();
         }
@@ -67,6 +71,7 @@ public final class HttpClientReader implements HttpReader {
         }
 
         @Override
+        @Nullable
         public String getContentType() {
             return this.response.headers().firstValue("content-type").orElse(null);
         }

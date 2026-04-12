@@ -1,6 +1,8 @@
 package com.kotori316.ap.internal;
 
 import com.kotori316.ap.api.HttpReader;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -22,7 +24,8 @@ public final class HttpURLConnectionReader implements HttpReader {
     }
 
     @Override
-    public HttpResponse read(URI uri, String method, Map<String, String> headers) throws IOException {
+    @NotNull
+    public HttpResponse read(@NotNull URI uri, @NotNull String method, @NotNull Map<String, String> headers) throws IOException {
         HttpURLConnection connection = (HttpURLConnection) uri.toURL().openConnection();
         connection.setInstanceFollowRedirects(true);
         connection.setRequestMethod(method);
@@ -36,6 +39,7 @@ public final class HttpURLConnectionReader implements HttpReader {
 
     private record HttpURLResponse(HttpURLConnection connection) implements HttpResponse {
         @Override
+        @NotNull
         public InputStream getInputStream() throws IOException {
             return this.connection.getInputStream();
         }
@@ -51,6 +55,7 @@ public final class HttpURLConnectionReader implements HttpReader {
         }
 
         @Override
+        @Nullable
         public String getContentType() {
             return this.connection.getContentType();
         }

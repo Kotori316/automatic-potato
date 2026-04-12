@@ -1,5 +1,8 @@
 package com.kotori316.ap.api;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.net.URI;
@@ -17,12 +20,14 @@ public interface HttpReader {
      * @return the response
      * @throws IOException if an I/O error occurs
      */
-    HttpResponse read(URI uri, String method, Map<String, String> headers) throws IOException;
+    @NotNull
+    HttpResponse read(@NotNull URI uri, @NotNull String method, @NotNull Map<String, String> headers) throws IOException;
 
     /**
      * @return the HttpReader instance from {@link java.util.ServiceLoader}
      * @throws NoSuchElementException if no implementation is found
      */
+    @NotNull
     static HttpReader load() {
         return StreamSupport.stream(ServiceLoader.load(HttpReader.class).spliterator(), false)
             .max(Comparator.comparingInt(HttpReader::priority))
@@ -38,12 +43,14 @@ public interface HttpReader {
     }
 
     interface HttpResponse extends AutoCloseable {
+        @NotNull
         InputStream getInputStream() throws IOException;
 
         int getResponseCode() throws IOException;
 
         boolean isOk() throws IOException;
 
+        @Nullable
         String getContentType();
 
         @Override
