@@ -7,15 +7,15 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v6
-      - uses: gradle/actions/wrapper-validation@v6
+      - uses: actions/checkout@de0fac2e4500dabe0009e67214ff5f5447ce83dd # v6.0.2
+      - uses: gradle/actions/wrapper-validation@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e # v6.1.0
       - name: Setup Java JDK
-        uses: actions/setup-java@v5
+        uses: actions/setup-java@be666c2fcd27ec809703dec50e508c2fdc7f6654 # v5.2.0
         with:
           distribution: 'temurin'
           java-version: '25'
       - run: chmod +x ./gradlew
-      - uses: gradle/actions/setup-gradle@v6
+      - uses: gradle/actions/setup-gradle@50e97c2cd7a37755bbfafc9c5b7cafaece252f6e # v6.1.0
         with:
           cache-read-only: ${{ github.event_name != 'push' }}
           cache-cleanup: 'on-success'
@@ -23,7 +23,7 @@ jobs:
       - run: ./gradlew javaToolchains checkReleaseVersion
       - run: ./gradlew publishToMavenLocal build
       - name: Upload artifacts
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@043fb46d1a93c77aae656e7c1c64a875d1fc6a0a # v7.0.1
         with:
           name: automatic-potato-${{ github.run_number }}
           path: "*/build/libs/*.jar"
