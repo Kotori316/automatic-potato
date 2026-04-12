@@ -153,8 +153,9 @@ final class ModWithVersionConnectionTest {
         assertEquals(CheckConnectionStatus.ERROR, status);
     }
 
-    @Test
-    void customMethod() throws Exception {
+    @ParameterizedTest
+    @ValueSource(strings = {"GET", "POST"})
+    void customMethod(String httpMethod) throws Exception {
         AtomicReference<String> methodRef = new AtomicReference<>();
         ModWithVersion version = new ModWithVersion(
             new ModVersionDetail(
@@ -164,7 +165,7 @@ final class ModWithVersionConnectionTest {
                 "1.16.5",
                 "1.20.5",
                 "1.0",
-                "POST",
+                httpMethod,
                 _ -> {
                 }
             ),
@@ -174,6 +175,6 @@ final class ModWithVersionConnectionTest {
             })
         );
         version.check();
-        assertEquals("POST", methodRef.get());
+        assertEquals(httpMethod, methodRef.get());
     }
 }
