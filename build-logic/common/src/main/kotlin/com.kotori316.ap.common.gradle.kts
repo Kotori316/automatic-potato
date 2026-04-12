@@ -11,19 +11,19 @@ base {
 java {
     withSourcesJar()
     toolchain {
-        languageVersion = JavaLanguageVersion.of(8)
+        languageVersion = JavaLanguageVersion.of(25)
     }
 }
 
 dependencies {
     // https://mvnrepository.com/artifact/org.junit.jupiter/junit-jupiter-api
-    testImplementation(platform("org.junit:junit-bom:5.14.3"))
+    testImplementation(platform("org.junit:junit-bom:6.0.3"))
     testImplementation("org.junit.jupiter:junit-jupiter")
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
 val modId: String by project
-// Fixed. Use 1.16.5
+// Fixed. Use 26.1.2
 val minecraftVersion: String by project
 
 tasks.processResources {

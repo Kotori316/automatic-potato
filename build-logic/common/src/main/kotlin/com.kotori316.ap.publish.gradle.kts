@@ -4,7 +4,7 @@ import com.kotori316.plugin.cf.CallVersionFunctionTask
 plugins {
     id("maven-publish")
     id("signing")
-    id("fabric-loom")
+    id("net.fabricmc.fabric-loom")
     id("me.modmuss50.mod-publish-plugin")
     id("com.kotori316.plugin.cf")
 }
@@ -18,16 +18,12 @@ val hasGpgSignature = project.hasProperty("signing.keyId") &&
         project.hasProperty("signing.secretKeyRingFile")
 val catalog: VersionCatalog = project.versionCatalogs.named("libs")
 
-val remapJarTask: org.gradle.jvm.tasks.Jar by tasks.named("remapJar", org.gradle.jvm.tasks.Jar::class)
-
 signing {
     sign(publishing.publications)
-    sign(remapJarTask)
 }
 
 tasks {
     val jksSignJar = register("jksSignJar") {
-        dependsOn(remapJar)
         onlyIf {
             project.hasProperty("jarSign.keyAlias") &&
                     project.hasProperty("jarSign.keyLocation") &&
@@ -36,7 +32,7 @@ tasks {
         doLast {
             ant.withGroovyBuilder {
                 "signjar"(
-                    "jar" to remapJar.flatMap { it.archiveFile }.get(),
+                    "jar" to tasks.jar.flatMap { it.archiveFile }.get(),
                     "alias" to project.findProperty("jarSign.keyAlias"),
                     "keystore" to project.findProperty("jarSign.keyLocation"),
                     "storepass" to project.findProperty("jarSign.storePass"),
@@ -47,7 +43,7 @@ tasks {
             }
         }
     }
-    remapJar {
+    tasks.jar {
         finalizedBy(jksSignJar)
     }
     withType(Sign::class) {
@@ -81,7 +77,7 @@ tasks {
 publishMods {
     dryRun = releaseDebug
     type = STABLE
-    file = remapJarTask.archiveFile
+    file = tasks.jar.flatMap { it.archiveFile }
     additionalFiles = files(
         tasks.named("sourcesJar")
     )
@@ -105,7 +101,7 @@ publishMods {
         accessToken = (project.findProperty("modrinthToken") ?: System.getenv("MODRINTH_TOKEN") ?: "") as String
         projectId = "fLArsyMM"
         minecraftVersionRange {
-            start =minecraftVersion
+            start = minecraftVersion
             end = "latest"
         }
     }

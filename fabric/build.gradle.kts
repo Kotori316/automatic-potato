@@ -5,7 +5,6 @@ plugins {
 
 dependencies {
     minecraft(libs.minecraft)
-    mappings(loom.officialMojangMappings())
 
-    modImplementation(libs.fabric.loader)
+    implementation(libs.fabric.loader)
 }
