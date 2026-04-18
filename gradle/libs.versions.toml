@@ -1,6 +1,6 @@
 [versions]
 minecraft = "26.1.2"
-plugin_cf = "3.5"
+plugin_cf = "4.0"
 plugin_publish_all = "1.+"
 # https://maven.fabricmc.net/net/fabricmc/fabric-loom/
 fabric_loom = "1.16.1"
