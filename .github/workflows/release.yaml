@@ -11,7 +11,7 @@ jobs:
       attestations: write
       artifact-metadata: write
     # See https://github.com/Kotori316/common-script/blob/v2/.github/workflows/release-prod-gradle.yaml
-    uses: 'Kotori316/common-script/.github/workflows/release-prod-gradle.yaml@v2'
+    uses: 'Kotori316/common-script/.github/workflows/release-prod-gradle.yaml@c0c9e41ef553a58637badb039b6529b14153b776' # v2.0.0
     with:
       sign_check_command: 'assemble publishToMavenLocal'
       release_command: 'checkReleaseVersion assemble publishToMavenLocal publishMods registerVersion publish'
