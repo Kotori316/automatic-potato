@@ -9,7 +9,7 @@ val releaseDebug = (System.getenv("RELEASE_DEBUG") ?: "true").toBoolean()
 publishMods {
     changelog = "See https://github.com/Kotori316/automatic-potato"
     dryRun = releaseDebug
-    displayName = "v${project.version} for Minecraft ${libs.versions.minecraft.get()} to latest"
+    displayName = "v${project.version} for Minecraft ${project.property("minecraftVersion")} to latest"
     type = if (project.version.toString().contains("SNAPSHOT")) BETA else STABLE
 
     val releaseJarFiles = getReleaseJarFiles()

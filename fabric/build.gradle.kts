@@ -4,7 +4,7 @@ plugins {
 }
 
 dependencies {
-    minecraft(libs.minecraft)
+    minecraft("com.mojang:minecraft:${project.property("minecraftVersion")}")
 
     implementation(libs.fabric.loader)
 }
