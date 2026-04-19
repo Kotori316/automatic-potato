@@ -4,7 +4,7 @@ plugin_publish_all = "1.1.0"
 # https://maven.fabricmc.net/net/fabricmc/fabric-loom/
 fabric_loom = "1.16.1"
 # https://maven.fabricmc.net/net/fabricmc/fabric-loader/
-fabric_loader = "0.19.1"
+fabric_loader = "0.19.2"
 
 [libraries]
 fabric_loader = { group = "net.fabricmc", name = "fabric-loader", version.ref = "fabric_loader" }
