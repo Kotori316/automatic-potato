@@ -1,6 +1,6 @@
 [versions]
 plugin_cf = "4.0"
-plugin_publish_all = "1.1.0"
+plugin_publish_all = "2.0.0"
 # https://maven.fabricmc.net/net/fabricmc/fabric-loom/
 fabric_loom = "1.16.3"
 # https://maven.fabricmc.net/net/fabricmc/fabric-loader/
