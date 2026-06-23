@@ -2,7 +2,7 @@
 plugin_cf = "4.0"
 plugin_publish_all = "2.0.1"
 # https://maven.fabricmc.net/net/fabricmc/fabric-loom/
-fabric_loom = "1.17.11"
+fabric_loom = "1.17.12"
 # https://maven.fabricmc.net/net/fabricmc/fabric-loader/
 fabric_loader = "0.19.3"
 
