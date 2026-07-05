@@ -76,6 +76,8 @@ publishMods {
                     ?: System.getenv("CURSE_TOKEN")
                     ?: "") as String
         projectId = "973884"
+        server = true
+        client = false
         minecraftVersionRange {
             start = minecraftVersion
             end = "latest"
