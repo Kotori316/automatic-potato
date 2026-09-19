@@ -15,6 +15,6 @@ dependencies {
         "fabric-loom" to libs.versions.fabric.loom.get(),
         "com.kotori316.plugin.cf" to libs.versions.plugin.cf.get(),
     ).forEach { (name, version) ->
-        implementation(group = name, name = "${name}.gradle.plugin", version = version)
+        implementation("$name:$name.gradle.plugin:$version")
     }
 }

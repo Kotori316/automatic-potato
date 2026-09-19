@@ -9,8 +9,8 @@ plugins {
     id("com.kotori316.plugin.cf")
 }
 
-val modId: String by project
-val minecraftVersion: String by project
+val modId = project.property("modId") as String
+val minecraftVersion = project.property("minecraftVersion") as String
 val releaseDebug = (System.getenv("RELEASE_DEBUG") ?: "true").toBoolean()
 val hasGpgSignature = project.hasProperty("signing.keyId") &&
         project.hasProperty("signing.password") &&
@@ -28,6 +28,7 @@ tasks {
                     project.hasProperty("jarSign.keyLocation") &&
                     project.hasProperty("jarSign.storePass")
         }
+        description = "Sign Jar file"
         jarFile = tasks.jar.flatMap { it.archiveFile }
         keyAlias = project.findProperty("jarSign.keyAlias") as? String ?: ""
         keyStore = project.findProperty("jarSign.keyLocation") as? String ?: ""
@@ -49,6 +50,7 @@ tasks {
         changelog = "Version ${project.version}"
         homepage = "https://modrinth.com/mod/automatic-potato"
         isDryRun = releaseDebug
+        description = "Register mod version"
     }
     register("checkReleaseVersion", CallVersionCheckFunctionTask::class) {
         gameVersion = minecraftVersion
@@ -56,6 +58,7 @@ tasks {
         modName = modId
         version = project.version.toString()
         failIfExists = !releaseDebug
+        description = "Check Release Version"
     }
 }
 

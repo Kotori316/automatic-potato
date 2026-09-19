@@ -22,9 +22,9 @@ dependencies {
     testRuntimeOnly("org.junit.platform:junit-platform-launcher")
 }
 
-val modId: String by project
+val modId = project.property("modId") as String
 // Fixed. Use 26.1.2
-val minecraftVersion: String by project
+val minecraftVersion = project.property("minecraftVersion") as String
 
 tasks.processResources {
     duplicatesStrategy = DuplicatesStrategy.EXCLUDE
